@@ -1,0 +1,14 @@
+[Unit]
+Description=This service auto-starts a script to measure voltage and current using INA226 sensor device.
+
+[Service]
+Type=forking
+# your username
+User=cit
+# your group
+Group=cit
+ExecStart=/home/cit/INA226_lib/pyfiles/logging_volt_current_single.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
