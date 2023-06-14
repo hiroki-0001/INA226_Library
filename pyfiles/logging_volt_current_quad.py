@@ -69,27 +69,27 @@ def main():
         # write tmp file
         tmp_file_fd = open("/var/tmp/voltage_and_current","a", encoding="utf_8", newline='\n')
         tmp_file_fd.write(
-            "Switched_mode_power_curent_mA:{},
-            Battery_power_curent_mA:{},
-            SBC_power_curent_mA:{},
-            Motor_power_curent_mA:{}, \n"
+            "Switched_mode_power_mA:{},\
+            Battery_power_mA:{},\
+            SBC_power_mA:{},\
+            Motor_power_mA:{},"
             .format(
                 Switched_mode_power_mA, 
-                Battery_power_curent_mA, 
-                SBC_power_curent_mA, 
-                Motor_power_curent_mA
+                Battery_power_mA, 
+                SBC_power_mA, 
+                Motor_power_mA
                 )
             )
         tmp_file_fd.write(
-            "Switched_mode_power_voltage_mV:{},
-            Battery_power_curent_mV:{},
-            SBC_power_curent_mV:{},
-            Motor_power_curent_mV:{}, \n"
+            "Switched_mode_power_mV:{},\
+            Battery_power_mV:{},\
+            SBC_power_mV:{},\
+            Motor_power_mV:{}, \n"
             .format(
                 Switched_mode_power_mV,
-                Battery_power_curent_mV,
-                SBC_power_curent_mV,
-                Motor_power_curent_mV
+                Battery_power_mV,
+                SBC_power_mV,
+                Motor_power_mV
                 )
             )
 
@@ -105,24 +105,26 @@ def main():
             log_file_fd.writelines(lines)
             
         log_file_fd.write(
-            "{},
-            Switched_mode_power_curent_mA:{},
-            Switched_mode_power_voltage_mV:{},
-            Battery_power_curent_mA:{},
-            Battery_power_curent_mV:{},
-            SBC_power_curent_mA:{},
-            SBC_power_curent_mV:{},
-            Motor_power_curent_mA:{}\n"
+            "{},\
+            Switched_mode_power_mA:{},\
+            Switched_mode_power_mV:{},\
+            Battery_power_mA:{},\
+            Battery_power_mV:{},\
+            SBC_power_mA:{},\
+            SBC_power_mV:{},\
+            Motor_power_mA:{}\
+			Motor_power_mV:{}\
+			\n"
             .format(
                 timed_filename_str,
                 Switched_mode_power_mA, 
                 Switched_mode_power_mV,
-                Battery_power_curent_mA, 
-                Battery_power_curent_mV,
-                SBC_power_curent_mA, 
-                SBC_power_curent_mV,
-                Motor_power_curent_mA
-                Motor_power_curent_mV
+                Battery_power_mA, 
+                Battery_power_mV,
+                SBC_power_mA, 
+                SBC_power_mV,
+                Motor_power_mA,
+                Motor_power_mV
                 )
             )
         
