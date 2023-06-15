@@ -33,30 +33,32 @@ def main():
     Battery_Input = INA226_lib.INA226(8, INA226_ADDR_A0_VDD_A1_GND, 2)
     SBC_Power_Supply = INA226_lib.INA226(8, INA226_ADDR_A0_SDA_A1_GND, 2)
     Actuator_Power_Supply = INA226_lib.INA226(8, INA226_ADDR_A0_SCL_A1_GND, 2)
-    
+    # Device initialization
     Switching_Power_Input.Initialization()
     Battery_Input.Initialization()
     SBC_Power_Supply.Initialization()
     Actuator_Power_Supply.Initialization()
-    
-    if(os.path.isfile('/var/tmp/voltage_and_current.csv')):
-        os.chmod("/var/tmp/voltage_and_current.csv", 0o777)
-        os.chown("/var/tmp/voltage_and_current.csv", 1000, 1000)
-    
-    else:
-        with open('/var/tmp/voltage_and_current.csv', 'w') as f:
-        os.chmod("/var/tmp/voltage_and_current.csv", 0o777)
-        os.chown("/var/tmp/voltage_and_current.csv", 1000, 1000)
-    
-    if(os.path.isfile('/var/tmp/voltage_and_current_log.csv')):
-        os.chmod("/var/tmp/voltage_and_current_log.csv", 0o777)
-        os.chown("/var/tmp/voltage_and_current_log.csv", 1000, 1000)
-        
-    else:
-        with open('/var/tmp/voltage_and_current_log.csv', 'w+') as f:
-        os.chmod("/var/tmp/voltage_and_current_log.csv", 0o777)
-        os.chown("/var/tmp/voltage_and_current_log.csv", 1000, 1000)
-    
+
+    header = [
+        'Timestamp', 
+        'Switching_Power_Input_mA',
+        'Switching_Power_Input_mV',
+        'Battery_Input_mA',
+        'Battery_Input_mV',
+        'SBC_Power_Supply_mA',
+        'SBC_Power_Supply_mV',
+        'Actuator_Power_Supply_mA',
+        'Actuator_Power_Supply_mV'
+    ]
+
+    with open('/var/tmp/voltage_and_current.csv', 'w') as f:
+        writer = csv.writer(f)
+        writer.writerow(header)
+
+    with open('/var/tmp/voltage_and_current_log.csv', 'w') as f:
+        writer = csv.writer(f)
+        writer.writerow(header)
+
     while(1):
         log_time = subprocess.check_output(['date', '+%Y年%m月%d日_%H時%M分%S秒'])
         timed_filename_str = log_time.decode(chardet.detect(log_time)["encoding"]).replace("\n", "")
@@ -75,6 +77,7 @@ def main():
         Actuator_Power_Supply_mA = Actuator_Power_Supply.Read_mA()
         Actuator_Power_Supply_mV = Actuator_Power_Supply.Read_mV()
         # Add data to the list
+        read_data.append(timed_filename_str)
         read_data.append(Switching_Power_Input_mA)
         read_data.append(Switching_Power_Input_mV)
         read_data.append(Battery_Input_mA)
@@ -85,33 +88,20 @@ def main():
         read_data.append(Actuator_Power_Supply_mV)
 
         # write tmp file
-        header = [
-            'Switching_Power_Input_mA',
-            'Switching_Power_Input_mV',
-            'Battery_Input_mA',
-            'Battery_Input_mV',
-            'SBC_Power_Supply_mA',
-            'SBC_Power_Supply_mV',
-            'Actuator_Power_Supply_mA',
-            'Actuator_Power_Supply_mV'
-        ]
-        
         with open('/var/tmp/voltage_and_current.csv', 'a') as f:
             writer = csv.writer(f)
-            writer.writerow(header)
             writer.writerow(read_data)
             
         # write log file
         with open('/var/tmp/voltage_and_current_log.csv', 'r+') as f:
-            lines = log_file_fd.readlines()
-            if len(lines) >= 1200:
-                lines = lines[2:]
-                log_file_fd.seek(0)
-                log_file_fd.truncate()
-                log_file_fd.writelines(lines)
+            lines = f.readlines()
+            if len(lines) >= 200:
+                lines.pop(1)
+                f.seek(0)
+                f.truncate()
+                f.writelines(lines)
             
             writer = csv.writer(f)
-            writer.writerow(header)
             writer.writerow(read_data)
         
         time.sleep(0.5)
