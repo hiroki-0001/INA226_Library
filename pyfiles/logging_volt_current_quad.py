@@ -55,9 +55,13 @@ def main():
         writer = csv.writer(f)
         writer.writerow(header)
 
-    with open('/var/tmp/voltage_and_current_log.csv', 'w') as f:
-        writer = csv.writer(f)
-        writer.writerow(header)
+    if os.path.isfile('/var/tmp/voltage_and_current_log.csv'):
+        pass
+
+    else:
+        with open('/var/tmp/voltage_and_current_log.csv', 'w') as f:
+            writer = csv.writer(f)
+            writer.writerow(header)
 
     while(1):
         log_time = subprocess.check_output(['date', '+%Y年%m月%d日_%H時%M分%S秒'])
