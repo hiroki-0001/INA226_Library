@@ -2,7 +2,7 @@
 Description=This service auto-starts a script to measure voltage and current using INA226 sensor device.
 
 [Service]
-Type=forking
+Type=simple
 # your username
 User=cit
 # your group

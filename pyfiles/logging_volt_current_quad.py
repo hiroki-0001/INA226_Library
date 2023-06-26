@@ -51,16 +51,16 @@ def main():
         'Actuator_Power_Supply_mV'
     ]
 
-    with open('/var/tmp/voltage_and_current.csv', 'w') as f:
-        writer = csv.writer(f)
+    with open('/var/tmp/voltage_and_current.csv', 'w') as file1:
+        writer = csv.writer(file1)
         writer.writerow(header)
 
     if os.path.isfile('/var/tmp/voltage_and_current_log.csv'):
         pass
 
     else:
-        with open('/var/tmp/voltage_and_current_log.csv', 'w') as f:
-            writer = csv.writer(f)
+        with open('/var/tmp/voltage_and_current_log.csv', 'w') as file2:
+            writer = csv.writer(file2)
             writer.writerow(header)
 
     while(1):
@@ -92,20 +92,20 @@ def main():
         read_data.append(Actuator_Power_Supply_mV)
 
         # write tmp file
-        with open('/var/tmp/voltage_and_current.csv', 'a') as f:
-            writer = csv.writer(f)
+        with open('/var/tmp/voltage_and_current.csv', 'a') as file1:
+            writer = csv.writer(file1)
             writer.writerow(read_data)
             
         # write log file
-        with open('/var/tmp/voltage_and_current_log.csv', 'r+') as f:
-            lines = f.readlines()
-            if len(lines) >= 200:
+        with open('/var/tmp/voltage_and_current_log.csv', 'r+') as file2:
+            lines = file2.readlines()
+            if len(lines) >= 2000:
                 lines.pop(1)
-                f.seek(0)
-                f.truncate()
-                f.writelines(lines)
+                file2.seek(0)
+                file2.truncate()
+                file2.writelines(lines)
             
-            writer = csv.writer(f)
+            writer = csv.writer(file2)
             writer.writerow(read_data)
         
         time.sleep(0.5)

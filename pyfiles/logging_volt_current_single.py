@@ -60,7 +60,7 @@ def main():
         # write log file
         log_file_fd = open("/var/tmp/voltage_and_current_log","r+", encoding="utf_8", newline='\n')
         lines = log_file_fd.readlines()
-        if len(lines) >= 1200:
+        if len(lines) >= 2000:
             lines = lines[1:]
             log_file_fd.seek(0)
             log_file_fd.truncate()
