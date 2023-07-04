@@ -8,6 +8,7 @@ import sys
 import subprocess
 import chardet
 import csv
+import datetime
 
 # INA226 I2C Slave address
 INA226_ADDR_A0_GND_A1_GND = 0x40
@@ -64,9 +65,10 @@ def main():
             writer.writerow(header)
 
     while(1):
-        log_time = subprocess.check_output(['date', '+%Y年%m月%d日_%H時%M分%S秒'])
-        timed_filename_str = log_time.decode(chardet.detect(log_time)["encoding"]).replace("\n", "")
-        
+        # log_time = subprocess.check_output(['date', '+%Y年%m月%d日_%H時%M分%S秒'])
+        # timed_filename_str = log_time.decode(chardet.detect(log_time)["encoding"]).replace("\n", "")
+        log_time = datetime.datetime.now()
+        timed_filename_str = log_time.strftime("%Y-%m-%d-%H:%M:%S")
         read_data = []
         # Read Switching_Power_Input
         Switching_Power_Input_mA = Switching_Power_Input.Read_mA()
@@ -91,11 +93,18 @@ def main():
         read_data.append(Actuator_Power_Supply_mA)
         read_data.append(Actuator_Power_Supply_mV)
 
+
+
         # write tmp file
         with open('/var/tmp/voltage_and_current.csv', 'a') as file1:
             writer = csv.writer(file1)
             writer.writerow(read_data)
-            
+        file1.close()
+
+        #排他ロックの取得
+        lock_file = open('current_voltage_log_lock.lock', 'r+')
+        fcntl.lockf(lock_file, fcntl.LOCK_EX)
+
         # write log file
         with open('/var/tmp/voltage_and_current_log.csv', 'r+') as file2:
             lines = file2.readlines()
@@ -107,6 +116,7 @@ def main():
             
             writer = csv.writer(file2)
             writer.writerow(read_data)
+        file2.close()
         
         time.sleep(0.5)
 
