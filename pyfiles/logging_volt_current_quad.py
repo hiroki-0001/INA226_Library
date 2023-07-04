@@ -28,6 +28,9 @@ INA226_ADDR_A0_VDD_A1_SCL = 0x53
 INA226_ADDR_A0_SDA_A1_SCL = 0x54
 INA226_ADDR_A0_SCL_A1_SCL = 0x55
 
+MAX_LOG_LINES = 2000  #ログを保存する最大の行数
+
+
 def main():
     #INA226(i2c_Bus, i2c_slave_address, shunt_resistor_val)
     Switching_Power_Input = INA226_lib.INA226(1, INA226_ADDR_A0_GND_A1_GND, 2)
@@ -106,18 +109,28 @@ def main():
         fcntl.lockf(lock_file, fcntl.LOCK_EX)
 
         # write log file
-        with open('/var/tmp/voltage_and_current_log.csv', 'r+') as file2:
-            lines = file2.readlines()
-            if len(lines) >= 2000:
-                lines.pop(1)
-                file2.seek(0)
-                file2.truncate()
-                file2.writelines(lines)
-            
-            writer = csv.writer(file2)
+        log_file = open('/var/tmp/voltage_and_current_log.csv', 'r+')
+        lines = log_file.readlines()
+
+        if len(lines) >= MAX_LOG_LINES:
+            log_file.close()
+            remove_num = len(lines) - MAX_LOG_LINES
+            lines = lines[remove_num:]
+            temp_log_file = open('/var/tmp/vc_tmp.csv', 'w')
+            temp_log_file.writelines(lines)
+            writer = csv.writer(temp_log_file)
             writer.writerow(read_data)
-        file2.close()
+            temp_log_file.close()
+            os.rename('/var/tmp/vc_tmp.csv', '/var/tmp/voltage_and_current_log.csv')
+        else:
+            writer = csv.writer(log_file)
+            writer.writerow(read_data)
+            log_file.close()
         
+        #排他ロックの解放
+        fcntl.lockf(lock_file, fcntl.LOCK_UN)
+
+        #sleep
         time.sleep(0.5)
 
 if __name__ == '__main__':
