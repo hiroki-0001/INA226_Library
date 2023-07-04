@@ -1,0 +1,1 @@
+flock -s /var/tmp/current_voltage_log_lock.lock cat /var/tmp/voltage_and_current_log.csv
