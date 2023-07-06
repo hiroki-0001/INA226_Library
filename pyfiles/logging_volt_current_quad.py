@@ -9,6 +9,7 @@ import subprocess
 import chardet
 import csv
 import datetime
+import fcntl
 
 # INA226 I2C Slave address
 INA226_ADDR_A0_GND_A1_GND = 0x40
