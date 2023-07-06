@@ -27,8 +27,11 @@ INA226_ADDR_A0_SDA_A1_SCL = 0x54
 INA226_ADDR_A0_SCL_A1_SCL = 0x55
 
 def main():
+    
+    I2CBUS = 1 # I2C通信に使用するBUS
+    
     #INA226(i2c_Bus, i2c_slave_address, shunt_resistor_val)
-    sample_device = INA226_lib.INA226(1, INA226_ADDR_A0_GND_A1_GND, 2)
+    sample_device = INA226_lib.INA226(I2CBUS, INA226_ADDR_A0_GND_A1_GND, 2)
     sample_device.Initialization()
     tmp_file_fd = open("/var/tmp/voltage_and_current","w", encoding="utf_8", newline='\n')
     tmp_file_fd.close()

@@ -19,8 +19,10 @@ INA226_ADDR_A0_VDD_A1_SCL = 0x53
 INA226_ADDR_A0_SDA_A1_SCL = 0x54
 INA226_ADDR_A0_SCL_A1_SCL = 0x55
 
+I2CBUS = 1;
+
 #INA226(i2c_Bus, i2c_slave_address, shunt_resistor_val)
-sample_device = INA226_lib.INA226(1, INA226_ADDR_A0_GND_A1_GND, 2)
+sample_device = INA226_lib.INA226(I2CBUS, INA226_ADDR_A0_GND_A1_GND, 2)
 sample_device.Initialization()
 
 while(1):

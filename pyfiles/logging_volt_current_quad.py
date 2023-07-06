@@ -29,14 +29,15 @@ INA226_ADDR_A0_SDA_A1_SCL = 0x54
 INA226_ADDR_A0_SCL_A1_SCL = 0x55
 
 MAX_LOG_LINES = 2000  #ログを保存する最大の行数
+I2CBUS = 1 # I2C通信に使用するBUS
 
 
 def main():
     #INA226(i2c_Bus, i2c_slave_address, shunt_resistor_val)
-    Switching_Power_Input = INA226_lib.INA226(1, INA226_ADDR_A0_GND_A1_GND, 2)
-    Battery_Input = INA226_lib.INA226(1, INA226_ADDR_A0_VDD_A1_GND, 2)
-    SBC_Power_Supply = INA226_lib.INA226(1, INA226_ADDR_A0_SDA_A1_GND, 2)
-    Actuator_Power_Supply = INA226_lib.INA226(1, INA226_ADDR_A0_SCL_A1_GND, 2)
+    Switching_Power_Input = INA226_lib.INA226(I2CBUS, INA226_ADDR_A0_GND_A1_GND, 2)
+    Battery_Input = INA226_lib.INA226(I2CBUS, INA226_ADDR_A0_VDD_A1_GND, 2)
+    SBC_Power_Supply = INA226_lib.INA226(I2CBUS, INA226_ADDR_A0_SDA_A1_GND, 2)
+    Actuator_Power_Supply = INA226_lib.INA226(I2CBUS, INA226_ADDR_A0_SCL_A1_GND, 2)
     # Device initialization
     Switching_Power_Input.Initialization()
     Battery_Input.Initialization()
@@ -105,7 +106,7 @@ def main():
         file1.close()
 
         #排他ロックの取得
-        lock_file = open('current_voltage_log_lock.lock', 'r+')
+        lock_file = open('current_voltage_log_lock.lock', 'w+')
         fcntl.lockf(lock_file, fcntl.LOCK_EX)
 
         # write log file
