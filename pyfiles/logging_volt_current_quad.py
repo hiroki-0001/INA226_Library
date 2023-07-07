@@ -107,7 +107,7 @@ def main():
         file1.close()
 
         #排他ロックの取得
-        lock_file = open('current_voltage_log_lock.lock', 'w+')
+        lock_file = open('current_voltage_log_lock.lock', 'r+')
         fcntl.lockf(lock_file, fcntl.LOCK_EX)
 
         # write log file
