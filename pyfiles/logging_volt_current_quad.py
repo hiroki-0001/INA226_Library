@@ -10,7 +10,7 @@ import chardet
 import csv
 import datetime
 import fcntl
-import log_data_pb2.py
+import log_data_pb2
 
 # INA226 I2C Slave address
 INA226_ADDR_A0_GND_A1_GND = 0x40

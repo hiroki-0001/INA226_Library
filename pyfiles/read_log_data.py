@@ -5,7 +5,7 @@ import os
 import sys
 import datetime
 import fcntl
-import log_data_pb2.py
+import log_data_pb2
 import csv
 
 # 関連するファイル
