@@ -141,7 +141,7 @@ def main():
         log_data_text = text_format.MessageToString(proto_data)
 
         # 一時ファイルに書きこみ
-        with open(tmp_log_file_path, 'a') as file1:
+        with open(tmp_log_file_path, 'w') as file1:
             file1.write(log_data_text)
         file1.close()
 
