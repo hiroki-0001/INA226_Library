@@ -80,7 +80,7 @@ def writeWithLock(data,loop_counter):
 
     # ログファイルへの書き込み
     try:
-        log_file = open(log_file_path, 'r+')
+        log_file = open(log_file_path, 'a')
         log_file.write(data)
         log_file.close()
     finally:
