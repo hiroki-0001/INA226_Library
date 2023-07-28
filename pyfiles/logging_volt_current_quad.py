@@ -11,6 +11,7 @@ import csv
 import datetime
 import fcntl
 import log_data_pb2
+from google.protobuf import text_format
 
 # INA226 I2C Slave address
 INA226_ADDR_A0_GND_A1_GND = 0x40
