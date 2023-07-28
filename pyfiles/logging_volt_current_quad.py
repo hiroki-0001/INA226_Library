@@ -146,7 +146,8 @@ def main():
         file1.close()
 
         # ログファイルに書きこみ
-        writeWithLock(serialized_data,Loop_counter)
+
+        writeWithLock(serialized_data.decode('utf-8'),Loop_counter)
         current_log_lines_number += 1
 
         #sleep

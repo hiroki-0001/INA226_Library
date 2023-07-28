@@ -55,7 +55,7 @@ def main():
     writer.writerow(csv_header)
     for line in log_data_lines:
         log_data = log_data_pb2.PowerLog()
-        log_data.ParseFromString(line)
+        log_data.ParseFromString(line.encode('utf-8'))
         writer.writerow([
             proto_data.timestamp.ToDatetime().strftime('%Y/%m/%d %H:%M:%S.%f'),
             proto_data.Switching_Power_Input_mAs,
