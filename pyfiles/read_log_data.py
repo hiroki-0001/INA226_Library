@@ -55,17 +55,17 @@ def main():
     writer.writerow(csv_header)
     for line in log_data_lines:
         log_data = log_data_pb2.PowerLog()
-        log_data.ParseFromString(line.encode('utf-8'))
+        log_data.ParseFromString(bytes.fromhex(line))
         writer.writerow([
-            proto_data.timestamp.ToDatetime().strftime('%Y/%m/%d %H:%M:%S.%f'),
-            proto_data.Switching_Power_Input_mAs,
-            proto_data.Switching_Power_Input_mVs,
-            proto_data.Battery_Input_mAs,
-            proto_data.Battery_Input_mVs,
-            proto_data.SBC_Power_Supply_mAs,
-            proto_data.SBC_Power_Supply_mVs,
-            proto_data.Actuator_Power_Supply_mAs,
-            proto_data.Actuator_Power_Supply_mV
+            log_data.timestamp.ToDatetime().strftime('%Y/%m/%d %H:%M:%S'),
+            log_data.Switching_Power_Input_mA,
+            log_data.Switching_Power_Input_mV,
+            log_data.Battery_Input_mA,
+            log_data.Battery_Input_mV,
+            log_data.SBC_Power_Supply_mA,
+            log_data.SBC_Power_Supply_mV,
+            log_data.Actuator_Power_Supply_mA,
+            log_data.Actuator_Power_Supply_mV
         ])
     output_file.close()
     print("write log data to {0}".format(output_file_path))
