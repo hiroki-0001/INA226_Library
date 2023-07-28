@@ -10,6 +10,7 @@ import chardet
 import csv
 import datetime
 import fcntl
+import log_data_pb2.py
 
 # INA226 I2C Slave address
 INA226_ADDR_A0_GND_A1_GND = 0x40
@@ -29,11 +30,66 @@ INA226_ADDR_A0_VDD_A1_SCL = 0x53
 INA226_ADDR_A0_SDA_A1_SCL = 0x54
 INA226_ADDR_A0_SCL_A1_SCL = 0x55
 
-MAX_LOG_LINES = 2000  #ログを保存する最大の行数
+
+# Settings
+LOGGING_HZ = 100 # ログを取得する周期(Hz)
+MINIMUM_LOG_LINES = LOGGING_HZ * 600  #最低限ログを保存しておく行数(10分相当分)
+MAX_LOG_LINES = MAX_LOG_LINES * 1.5 #この行数を超えたら、ログを上の行数まで減らす
 I2CBUS = 1 # I2C通信に使用するBUS
 
 
+# 関連するファイル
+
+#ログを保存するファイル,シリアライズされたバイナリが保存されている
+log_file_path = '/var/tmp/log_voltage_and_current.dat'
+#現在のデータを参照したい時のためのファイル、最新のデータがテキストで保存されている
+tmp_log_file_path = '/var/tmp/tmp_voltage_and_current.txt'
+#ログを保存するファイル用のロックファイル
+lock_log_file_path = '/var/tmp/lock_voltage_and_current.lock'
+
+
+# ログファイルの行数を確認し、最大行数を超えていたら古いログを削除する. 削除した後の行数を返す
+def truncateLogFile(current_lines):
+    #ログの行数チェック
+    if current_lines >= MAX_LOG_LINES:
+        remove_num = current_lines - MINIMUM_LOG_LINES # MINIMUM_LOG_LINESまで行数を減らす
+        
+        log_file_fd = open(log_file_path, 'r+')
+        lines = log_file_fd.readlines()
+        log_file_fd.close()
+
+        lines = lines[remove_num:]
+
+        tmp_file = '/var/tmp/vc_tmp.dat'
+        temp_log_file = open(tmp_file, 'w')
+        temp_log_file.writelines(lines)
+        temp_log_file.close()
+
+        #余剰の行を削除して作った一時ファイルを新しいログファイルとして上書きする
+        os.rename(tmp_file, log_file_path)
+        return len(lines)
+    else:
+        return current_lines
+
+#ロックを取得してログファイルに書き込む
+def writeWithLock(data,loop_counter):
+    #排他ロックの取得
+    lock_file = open(lock_log_file_path, 'r+')
+    fcntl.lockf(lock_file, fcntl.LOCK_EX)
+
+    # ログファイルへの書き込み
+    try:
+        log_file = open(log_file_path, 'r+')
+        log_file.write(serialized_data)
+        log_file.close()
+    finally:
+        #排他ロックの解放
+        fcntl.lockf(lock_file, fcntl.LOCK_UN)
+
 def main():
+    # ループカウンタ
+    Loop_counter = 1 
+
     #INA226(i2c_Bus, i2c_slave_address, shunt_resistor_val)
     Switching_Power_Input = INA226_lib.INA226(I2CBUS, INA226_ADDR_A0_GND_A1_GND, 2)
     Battery_Input = INA226_lib.INA226(I2CBUS, INA226_ADDR_A0_VDD_A1_GND, 2)
@@ -45,95 +101,59 @@ def main():
     SBC_Power_Supply.Initialization()
     Actuator_Power_Supply.Initialization()
 
-    header = [
-        'Timestamp', 
-        'Switching_Power_Input_mA',
-        'Switching_Power_Input_mV',
-        'Battery_Input_mA',
-        'Battery_Input_mV',
-        'SBC_Power_Supply_mA',
-        'SBC_Power_Supply_mV',
-        'Actuator_Power_Supply_mA',
-        'Actuator_Power_Supply_mV'
-    ]
-
-    with open('/var/tmp/voltage_and_current.csv', 'w') as file1:
-        writer = csv.writer(file1)
-        writer.writerow(header)
-
-    if os.path.isfile('/var/tmp/voltage_and_current_log.csv'):
+#ログファイルが存在するかの確認
+    if os.path.isfile(log_file_path):
         pass
-
     else:
-        with open('/var/tmp/voltage_and_current_log.csv', 'w') as file2:
-            writer = csv.writer(file2)
-            writer.writerow(header)
+        with open(log_file_path, 'w') as log_file:
+            log_file.write('\n')
+            log_file.close()
 
+    # ログファイルの行数確認と切り捨て
+    current_log_lines_number = len(open(log_file_path).readlines())
+    current_log_lines_number = truncateLogFile(current_log_lines_number)
+
+#データの読み取りと保存のループ
     while(1):
-        # log_time = subprocess.check_output(['date', '+%Y年%m月%d日_%H時%M分%S秒'])
-        # timed_filename_str = log_time.decode(chardet.detect(log_time)["encoding"]).replace("\n", "")
-        log_time = datetime.datetime.now()
-        timed_filename_str = log_time.strftime("%Y-%m-%d-%H:%M:%S")
-        read_data = []
-        # Read Switching_Power_Input
-        Switching_Power_Input_mA = Switching_Power_Input.Read_mA()
-        Switching_Power_Input_mV = Switching_Power_Input.Read_mV()
-        # Read Battery_Input_Power_Input
-        Battery_Input_mA = Battery_Input.Read_mA()
-        Battery_Input_mV = Battery_Input.Read_mV()
-        # Read SBC_Power_Supply
-        SBC_Power_Supply_mA = SBC_Power_Supply.Read_mA()
-        SBC_Power_Supply_mV = SBC_Power_Supply.Read_mV()
-        # Read Actuator_Power_Supply        
-        Actuator_Power_Supply_mA = Actuator_Power_Supply.Read_mA()
-        Actuator_Power_Supply_mV = Actuator_Power_Supply.Read_mV()
-        # Add data to the list
-        read_data.append(timed_filename_str)
-        read_data.append(Switching_Power_Input_mA)
-        read_data.append(Switching_Power_Input_mV)
-        read_data.append(Battery_Input_mA)
-        read_data.append(Battery_Input_mV)
-        read_data.append(SBC_Power_Supply_mA)
-        read_data.append(SBC_Power_Supply_mV)
-        read_data.append(Actuator_Power_Supply_mA)
-        read_data.append(Actuator_Power_Supply_mV)
+        # protoを作成
+        proto_data = log_data_pb2.PowerLog()
 
+        # タイムスタンプをセット
+        proto_data.timestamp.GetCurrentTime()
+        # Switching_Power_Input を読み取って代入
+        proto_data.Switching_Power_Input_mA = Switching_Power_Input.Read_mA()
+        proto_data.Switching_Power_Input_mV = Switching_Power_Input.Read_mV()
+        # Battery_Input_Power_Input を読み取って代入
+        proto_data.Battery_Input_mA = Battery_Input.Read_mA()
+        proto_data.Battery_Input_mV = Battery_Input.Read_mV()
+        # SBC_Power_Supply を読み取って代入
+        proto_data.SBC_Power_Supply_mA = SBC_Power_Supply.Read_mA()
+        proto_data.SBC_Power_Supply_mV = SBC_Power_Supply.Read_mV()
+        # Actuator_Power_Supply を読み取って代入        
+        proto_data.Actuator_Power_Supply_mA = Actuator_Power_Supply.Read_mA()
+        proto_data.Actuator_Power_Supply_mV = Actuator_Power_Supply.Read_mV()
 
+        #データのシリアライズ
+        serialized_data = proto_data.SerializeToString()
 
-        # write tmp file
-        with open('/var/tmp/voltage_and_current.csv', 'a') as file1:
-            writer = csv.writer(file1)
-            writer.writerow(read_data)
+        #一時ファイルに書く用のテキストデータにも変換
+        log_data_text = text_format.MessageToString(proto_data)
+
+        # 一時ファイルに書きこみ
+        with open(tmp_log_file_path, 'a') as file1:
+            file1.write(log_data_text)
         file1.close()
 
-        #排他ロックの取得
-        lock_file = open('current_voltage_log_lock.lock', 'r+')
-        fcntl.lockf(lock_file, fcntl.LOCK_EX)
-
-        # write log file
-        log_file = open('/var/tmp/voltage_and_current_log.csv', 'r+')
-        lines = log_file.readlines()
-
-        if len(lines) >= MAX_LOG_LINES:
-            log_file.close()
-            remove_num = len(lines) - MAX_LOG_LINES
-            lines = lines[remove_num:]
-            temp_log_file = open('/var/tmp/vc_tmp.csv', 'w')
-            temp_log_file.writelines(lines)
-            writer = csv.writer(temp_log_file)
-            writer.writerow(read_data)
-            temp_log_file.close()
-            os.rename('/var/tmp/vc_tmp.csv', '/var/tmp/voltage_and_current_log.csv')
-        else:
-            writer = csv.writer(log_file)
-            writer.writerow(read_data)
-            log_file.close()
-        
-        #排他ロックの解放
-        fcntl.lockf(lock_file, fcntl.LOCK_UN)
+        # ログファイルに書きこみ
+        writeWithLock(serialized_data,Loop_counter)
+        current_log_lines_number += 1
 
         #sleep
-        time.sleep(0.5)
+        time.sleep(1.0/LOGGING_HZ)
+
+        Loop_counter += 1
+        if Loop_counter % (LOGGING_HZ * 1200) == 0: #20分に一回行数チェックして切り捨てる
+            current_log_lines_number = truncateLogFile(current_log_lines_number)
 
 if __name__ == '__main__':
     main()
