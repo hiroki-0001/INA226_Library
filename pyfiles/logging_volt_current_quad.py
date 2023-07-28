@@ -62,7 +62,7 @@ def truncateLogFile(current_lines):
         lines = lines[remove_num:]
 
         tmp_file = '/var/tmp/vc_tmp.dat'
-        temp_log_file = open(tmp_file, 'w')
+        temp_log_file = open(tmp_file, 'ab')
         temp_log_file.writelines(lines)
         temp_log_file.close()
 
@@ -81,7 +81,7 @@ def writeWithLock(data,loop_counter):
     # ログファイルへの書き込み
     try:
         log_file = open(log_file_path, 'a')
-        log_file.write(data)
+        log_file.write(data + '\n')
         log_file.close()
     finally:
         #排他ロックの解放
@@ -147,7 +147,7 @@ def main():
 
         # ログファイルに書きこみ
 
-        writeWithLock(serialized_data.decode('utf-8'),Loop_counter)
+        writeWithLock(serialized_data.hex(),Loop_counter)
         current_log_lines_number += 1
 
         #sleep
