@@ -33,6 +33,7 @@ def main():
     if len(sys.argv) > 1:
         output_file_path = sys.argv[1]
     else: 
+        output_file_path = 'vol_and_cur_data.csv'
         print("If you want to change output file name, please input the name as an argument.")
 
     #排他ロックの取得
@@ -53,7 +54,7 @@ def main():
     writer = csv.writer(output_file, lineterminator='\n')
     writer.writerow(csv_header)
     for line in log_data_lines:
-        log_data = log_data_pb2.LogData()
+        log_data = log_data_pb2.PowerLog()
         log_data.ParseFromString(line)
         writer.writerow([
             proto_data.timestamp.ToDatetime().strftime('%Y/%m/%d %H:%M:%S.%f'),
