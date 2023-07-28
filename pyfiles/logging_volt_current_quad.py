@@ -121,17 +121,17 @@ def main():
         # タイムスタンプをセット
         proto_data.timestamp.GetCurrentTime()
         # Switching_Power_Input を読み取って代入
-        proto_data.Switching_Power_Input_mA = Switching_Power_Input.Read_mA()
-        proto_data.Switching_Power_Input_mV = Switching_Power_Input.Read_mV()
+        proto_data.Switching_Power_Input_mA = int(Switching_Power_Input.Read_mA())
+        proto_data.Switching_Power_Input_mV = int(Switching_Power_Input.Read_mV())
         # Battery_Input_Power_Input を読み取って代入
-        proto_data.Battery_Input_mA = Battery_Input.Read_mA()
-        proto_data.Battery_Input_mV = Battery_Input.Read_mV()
+        proto_data.Battery_Input_mA = int(Battery_Input.Read_mA())
+        proto_data.Battery_Input_mV = int(Battery_Input.Read_mV())
         # SBC_Power_Supply を読み取って代入
-        proto_data.SBC_Power_Supply_mA = SBC_Power_Supply.Read_mA()
-        proto_data.SBC_Power_Supply_mV = SBC_Power_Supply.Read_mV()
+        proto_data.SBC_Power_Supply_mA = int(SBC_Power_Supply.Read_mA())
+        proto_data.SBC_Power_Supply_mV = int(SBC_Power_Supply.Read_mV())
         # Actuator_Power_Supply を読み取って代入        
-        proto_data.Actuator_Power_Supply_mA = Actuator_Power_Supply.Read_mA()
-        proto_data.Actuator_Power_Supply_mV = Actuator_Power_Supply.Read_mV()
+        proto_data.Actuator_Power_Supply_mA = int(Actuator_Power_Supply.Read_mA())
+        proto_data.Actuator_Power_Supply_mV = int(Actuator_Power_Supply.Read_mV())
 
         #データのシリアライズ
         serialized_data = proto_data.SerializeToString()
