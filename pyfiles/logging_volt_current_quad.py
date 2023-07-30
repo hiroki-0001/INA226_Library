@@ -36,6 +36,7 @@ INA226_ADDR_A0_SCL_A1_SCL = 0x55
 LOGGING_HZ = 100 # ログを取得する周期(Hz)
 MINIMUM_LOG_LINES = LOGGING_HZ * 600  #最低限ログを保存しておく行数(10分相当分)
 MAX_LOG_LINES = MINIMUM_LOG_LINES * 1.5 #この行数を超えたら、ログを上の行数まで減らす
+SLEEP_TIME = 1.0 / LOGGING_HZ #ログを取るのに待つ間隔
 I2CBUS = 1 # I2C通信に使用するBUS
 
 
@@ -48,6 +49,8 @@ tmp_log_file_path = '/var/tmp/tmp_voltage_and_current.txt'
 #ログを保存するファイル用のロックファイル
 lock_log_file_path = '/var/tmp/lock_voltage_and_current.lock'
 
+lock_file = None
+log_file = None
 
 # ログファイルの行数を確認し、最大行数を超えていたら古いログを削除する. 削除した後の行数を返す
 def truncateLogFile(current_lines):
@@ -62,7 +65,7 @@ def truncateLogFile(current_lines):
         lines = lines[remove_num:]
 
         tmp_file = '/var/tmp/vc_tmp.dat'
-        temp_log_file = open(tmp_file, 'ab')
+        temp_log_file = open(tmp_file, 'w')
         temp_log_file.writelines(lines)
         temp_log_file.close()
 
@@ -73,23 +76,37 @@ def truncateLogFile(current_lines):
         return current_lines
 
 #ロックを取得してログファイルに書き込む
-def writeWithLock(data,loop_counter):
-    #排他ロックの取得
-    lock_file = open(lock_log_file_path, 'r+')
-    fcntl.lockf(lock_file, fcntl.LOCK_EX)
+def writeWithLock(data,loop_counter,lock_file_fd,log_file_fd):
+    #排他ロックを一度解放する事で待ってる側に受け渡す
+    if loop_counter % LOGGING_HZ == 0:    #一番最初とそれ以降は一秒毎に手放す
+        #ファイルをクローズして排他ロックの解放 
+        if not log_file_fd.closed:
+            log_file_fd.close()
+        if not lock_file_fd.closed:
+            fcntl.lockf(lock_file_fd, fcntl.LOCK_UN)
+            lock_file_fd.close()
+        else:
+            with open(lock_log_file_path, 'r+') as lockf:
+                fcntl.lockf(lockf, fcntl.LOCK_UN)
+
+        #排他ロックの取得
+        lock_file_fd = open(lock_log_file_path, 'r+')
+        fcntl.lockf(lock_file_fd, fcntl.LOCK_EX)
+        log_file_fd = open(log_file_path, 'a')
 
     # ログファイルへの書き込み
-    try:
-        log_file = open(log_file_path, 'a')
-        log_file.write(data + '\n')
-        log_file.close()
-    finally:
-        #排他ロックの解放
-        fcntl.lockf(lock_file, fcntl.LOCK_UN)
+    if not log_file_fd.closed:
+        log_file_fd.write(data + '\n')
+
+    return lock_file_fd
 
 def main():
+
+    global log_file
+    global lock_file
+
     # ループカウンタ
-    Loop_counter = 1 
+    Loop_counter = 0
 
     #INA226(i2c_Bus, i2c_slave_address, shunt_resistor_val)
     Switching_Power_Input = INA226_lib.INA226(I2CBUS, INA226_ADDR_A0_GND_A1_GND, 2)
@@ -106,19 +123,28 @@ def main():
     if os.path.isfile(log_file_path):
         pass
     else:
-        with open(log_file_path, 'w') as log_file:
-            log_file.write('\n')
-            log_file.close()
+        with open(log_file_path, 'w') as tmpf:
+            tmpf.write('\n')
+            tmpf.close()
 
     # ログファイルの行数確認と切り捨て
-    current_log_lines_number = len(open(log_file_path).readlines())
+    with open(log_file_path) as tmpf:
+        current_log_lines_number = len(tmpf.readlines())
     current_log_lines_number = truncateLogFile(current_log_lines_number)
+
+    #ログファイルとロックファイルのファイルディスクリプタのオープン
+    lock_file = open(lock_log_file_path, 'r+')
+    fcntl.lockf(lock_file, fcntl.LOCK_EX)
+    log_file = open(log_file_path, 'a')
+
+    #パフォーマンス計測用
+    ave_time = 0
 
 #データの読み取りと保存のループ
     while(1):
+        start_time = time.perf_counter()
         # protoを作成
         proto_data = log_data_pb2.PowerLog()
-
         # タイムスタンプをセット
         proto_data.timestamp.GetCurrentTime()
         # Switching_Power_Input を読み取って代入
@@ -137,25 +163,23 @@ def main():
         #データのシリアライズ
         serialized_data = proto_data.SerializeToString()
 
-        #一時ファイルに書く用のテキストデータにも変換
-        log_data_text = text_format.MessageToString(proto_data)
-
-        # 一時ファイルに書きこみ
-        with open(tmp_log_file_path, 'w') as file1:
-            file1.write(log_data_text)
-        file1.close()
-
         # ログファイルに書きこみ
-
-        writeWithLock(serialized_data.hex(),Loop_counter)
+        writeWithLock(serialized_data.hex(),Loop_counter,lock_file,log_file)
         current_log_lines_number += 1
 
+        elapsed_time = time.perf_counter() - start_time
         #sleep
-        time.sleep(1.0/LOGGING_HZ)
+        if(elapsed_time < SLEEP_TIME):
+            time.sleep( SLEEP_TIME - elapsed_time)
 
         Loop_counter += 1
         if Loop_counter % (LOGGING_HZ * 1200) == 0: #20分に一回行数チェックして切り捨てる
             current_log_lines_number = truncateLogFile(current_log_lines_number)
+
+        #パフォーマンス計測用
+        # ave_time += elapsed_time
+        # if Loop_counter % 100 == 0:
+        #     print(ave_time / Loop_counter)
 
 if __name__ == '__main__':
     main()
