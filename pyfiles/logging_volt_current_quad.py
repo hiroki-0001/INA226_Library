@@ -33,7 +33,7 @@ INA226_ADDR_A0_SCL_A1_SCL = 0x55
 
 
 # Settings
-LOGGING_HZ = 100 # ログを取得する周期(Hz)
+LOGGING_HZ = 200 # ログを取得する周期(Hz)
 MINIMUM_LOG_LINES = LOGGING_HZ * 600  #最低限ログを保存しておく行数(10分相当分)
 MAX_LOG_LINES = MINIMUM_LOG_LINES * 1.5 #この行数を超えたら、ログを上の行数まで減らす
 SLEEP_TIME = 1.0 / LOGGING_HZ #ログを取るのに待つ間隔
@@ -95,10 +95,9 @@ def writeWithLock(data,loop_counter,lock_file_fd,log_file_fd):
         log_file_fd = open(log_file_path, 'a')
 
     # ログファイルへの書き込み
-    if not log_file_fd.closed:
-        log_file_fd.write(data + '\n')
+    log_file_fd.write(data + '\n')
 
-    return lock_file_fd
+    return lock_file_fd,log_file_fd 
 
 def main():
 
@@ -164,7 +163,7 @@ def main():
         serialized_data = proto_data.SerializeToString()
 
         # ログファイルに書きこみ
-        writeWithLock(serialized_data.hex(),Loop_counter,lock_file,log_file)
+        lock_file,log_file = writeWithLock(serialized_data.hex(),Loop_counter,lock_file,log_file)
         current_log_lines_number += 1
 
         elapsed_time = time.perf_counter() - start_time
