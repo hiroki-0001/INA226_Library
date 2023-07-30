@@ -57,7 +57,7 @@ def main():
         log_data = log_data_pb2.PowerLog()
         log_data.ParseFromString(bytes.fromhex(line))
         writer.writerow([
-            log_data.timestamp.ToDatetime().strftime('%Y/%m/%d %H:%M:%S'),
+            log_data.timestamp.ToDatetime().strftime('%Y/%m/%d_%H:%M:%S'),
             log_data.Switching_Power_Input_mA,
             log_data.Switching_Power_Input_mV,
             log_data.Battery_Input_mA,
