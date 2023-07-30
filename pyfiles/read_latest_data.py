@@ -29,7 +29,7 @@ def main():
         fcntl.lockf(lock_file, fcntl.LOCK_UN)
     
 
-    with open('file.txt', 'r') as f:
+    with open(log_file_path, 'r') as f:
         last_line = f.readlines()[-1]
     fcntl.lockf(lock_file, fcntl.LOCK_UN)
     log_data = log_data_pb2.PowerLog()
