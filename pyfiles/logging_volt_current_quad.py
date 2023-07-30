@@ -33,7 +33,7 @@ INA226_ADDR_A0_SCL_A1_SCL = 0x55
 
 
 # Settings
-LOGGING_HZ = 200 # ログを取得する周期(Hz)
+LOGGING_HZ = 100 # ログを取得する周期(Hz)
 MINIMUM_LOG_LINES = LOGGING_HZ * 600  #最低限ログを保存しておく行数(10分相当分)
 MAX_LOG_LINES = MINIMUM_LOG_LINES * 1.5 #この行数を超えたら、ログを上の行数まで減らす
 SLEEP_TIME = 1.0 / LOGGING_HZ #ログを取るのに待つ間隔
