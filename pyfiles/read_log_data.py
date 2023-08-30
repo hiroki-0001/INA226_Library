@@ -53,9 +53,16 @@ def main():
     output_file = open(output_file_path, 'w')
     writer = csv.writer(output_file, lineterminator='\n')
     writer.writerow(csv_header)
+    line_count = 1
     for line in log_data_lines:
         log_data = log_data_pb2.PowerLog()
-        log_data.ParseFromString(bytes.fromhex(line))
+        try:
+            log_data.ParseFromString(bytes.fromhex(line))
+        except Exception as e:
+            print("------- Error!!! -------")
+            print(e)
+            print("Error: line {0} is bad format ".format(line_count))
+            exit(1)
         writer.writerow([
             log_data.timestamp.ToDatetime().strftime('%Y/%m/%d_%H:%M:%S'),
             log_data.Switching_Power_Input_mA,
@@ -67,6 +74,7 @@ def main():
             log_data.Actuator_Power_Supply_mA,
             log_data.Actuator_Power_Supply_mV
         ])
+        line_count += 1
     output_file.close()
     print("write log data to {0}".format(output_file_path))
 
