@@ -18,8 +18,9 @@ lock_log_file_path = '/var/tmp/lock_voltage_and_current.lock'
 output_file_path = 'vol_and_cur_data.csv'
 
 csv_header = [ 
-    'timestamp',
-    'system_boot_time_msec'
+    'timestamp_date',
+    'timestamp_time',
+    'system_boot_time_msec',
     'Switching_Power_Input_mA',
     'Switching_Power_Input_mV',
     'Battery_Input_mA',
@@ -70,7 +71,8 @@ def main():
             start_time = log_data.timestamp.ToMilliseconds()
         prev_time = log_data.timestamp.ToMilliseconds()
         writer.writerow([
-            log_data.timestamp.ToDatetime().strftime('%Y/%m/%d,%H:%M:%S'),
+            log_data.timestamp.ToDatetime().strftime('%Y/%m/%d'),
+            log_data.timestamp.ToDatetime().strftime('%H:%M:%S'),
             log_data.timestamp.ToMilliseconds() - start_time,
             log_data.Switching_Power_Input_mA,
             log_data.Switching_Power_Input_mV,
