@@ -19,6 +19,7 @@ output_file_path = 'vol_and_cur_data.csv'
 
 csv_header = [ 
     'timestamp',
+    'system_boot_time_msec'
     'Switching_Power_Input_mA',
     'Switching_Power_Input_mV',
     'Battery_Input_mA',
@@ -54,6 +55,8 @@ def main():
     writer = csv.writer(output_file, lineterminator='\n')
     writer.writerow(csv_header)
     line_count = 1
+    start_time = 0
+    prev_time = 0
     for line in log_data_lines:
         log_data = log_data_pb2.PowerLog()
         try:
@@ -63,8 +66,12 @@ def main():
             print(e)
             print("Error: line {0} is bad format ".format(line_count))
             exit(1)
+        if abs(log_data.timestamp.ToMilliseconds() - prev_time) > 2000:
+            start_time = log_data.timestamp.ToMilliseconds()
+        prev_time = log_data.timestamp.ToMilliseconds()
         writer.writerow([
-            log_data.timestamp.ToDatetime().strftime('%Y/%m/%d_%H:%M:%S'),
+            log_data.timestamp.ToDatetime().strftime('%Y/%m/%d,%H:%M:%S'),
+            log_data.timestamp.ToMilliseconds() - start_time,
             log_data.Switching_Power_Input_mA,
             log_data.Switching_Power_Input_mV,
             log_data.Battery_Input_mA,
