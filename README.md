@@ -32,7 +32,7 @@ sudo systemctl status INA226VoltAndCurrent.service
 ```
 
 ### ログデータのcsvへの変換
-- 以下を実行すると pyfiles/vol_and_cur_data.csv にcsvが出力される
+- 以下を実行すると このプログラムを実行したディレクトリのvol_and_cur_data.csvにcsvが出力される
 ```bash
 python3 pyfiles/read_log_data.py
 ```
