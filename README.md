@@ -10,17 +10,34 @@
 sudo ln -s ~/INA226_lib/INA226VoltAndCurrent.service /etc/systemd/system/INA226VoltAndCurrent.service
 ```
 
-サービスの自動起動の登録
+### サービスの自動起動の登録
 ```bash
 sudo systemctl enable INA226VoltAndCurrent.service
 ```
 
-サービスの起動
+### サービスの起動
 ```bash
 sudo systemctl start INA226VoltAndCurrent.service
 ```
 
-サービスの起動確認
+### サービスの起動確認
 ```bash
 sudo systemctl status INA226VoltAndCurrent.service
+```
+
+### シリアライズされた状態のログファイルを直接確認する方法
+- 以下を実行するとファイルロックを取得した上で直接catされる。パイプ等でよしなにしてください。
+```bash
+./read_log_data_with_flock.sh
+```
+
+### ログデータのcsvへの変換
+- 以下を実行すると pyfiles/vol_and_cur_data.csv にcsvが出力される
+```bash
+python3 pyfiles/read_log_data.py
+```
+
+### 一番直近で取得したセンサ値の表示
+```bash
+python3 pyfiles/read_latest_data.py
 ```
