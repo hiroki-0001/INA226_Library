@@ -104,19 +104,56 @@ def main():
     global log_file
     global lock_file
 
+    Switching_Power_Input_OK  = True
+    Battery_Input_OK = True
+    SBC_Power_Supply_OK = True
+    Actuator_Power_Supply_OK = True
+
     # ループカウンタ
     Loop_counter = 0
 
     #INA226(i2c_Bus, i2c_slave_address, shunt_resistor_val)
-    Switching_Power_Input = INA226_lib.INA226(I2CBUS, INA226_ADDR_A0_GND_A1_GND, 2)
-    Battery_Input = INA226_lib.INA226(I2CBUS, INA226_ADDR_A0_VDD_A1_GND, 2)
-    SBC_Power_Supply = INA226_lib.INA226(I2CBUS, INA226_ADDR_A0_SDA_A1_GND, 2)
-    Actuator_Power_Supply = INA226_lib.INA226(I2CBUS, INA226_ADDR_A0_SCL_A1_GND, 2)
+    
+    try:
+        Switching_Power_Input = INA226_lib.INA226(I2CBUS, INA226_ADDR_A0_GND_A1_GND, 2)
+    except:
+        Switching_Power_Input_OK = False
+    
+    try:
+        Battery_Input = INA226_lib.INA226(I2CBUS, INA226_ADDR_A0_VDD_A1_GND, 2)
+    except:
+        Battery_Input_OK = False
+    
+    try:
+        SBC_Power_Supply = INA226_lib.INA226(I2CBUS, INA226_ADDR_A0_SDA_A1_GND, 2)
+    except:
+        SBC_Power_Supply_OK = False
+    
+    try:
+        Actuator_Power_Supply = INA226_lib.INA226(I2CBUS, INA226_ADDR_A0_SCL_A1_GND, 2)
+    except:
+        Actuator_Power_Supply_OK = False
+
     # Device initialization
-    Switching_Power_Input.Initialization()
-    Battery_Input.Initialization()
-    SBC_Power_Supply.Initialization()
-    Actuator_Power_Supply.Initialization()
+    try:
+        Switching_Power_Input.Initialization()
+    except:
+        Switching_Power_Input_OK = False
+
+    try:
+        Battery_Input.Initialization()
+    except:
+        Battery_Input_OK = False
+
+    try:
+        SBC_Power_Supply.Initialization()
+    except:
+        SBC_Power_Supply_OK = False
+
+    try:
+        Actuator_Power_Supply.Initialization()
+    except:
+        Actuator_Power_Supply_OK = False
 
 #ログファイルが存在するかの確認
     if os.path.isfile(log_file_path):
@@ -147,17 +184,21 @@ def main():
         # タイムスタンプをセット
         proto_data.timestamp.GetCurrentTime()
         # Switching_Power_Input を読み取って代入
-        proto_data.Switching_Power_Input_mA = int(Switching_Power_Input.Read_mA())
-        proto_data.Switching_Power_Input_mV = int(Switching_Power_Input.Read_mV())
+        if Switching_Power_Input_OK:
+            proto_data.Switching_Power_Input_mA = int(Switching_Power_Input.Read_mA())
+            proto_data.Switching_Power_Input_mV = int(Switching_Power_Input.Read_mV())
         # Battery_Input_Power_Input を読み取って代入
-        proto_data.Battery_Input_mA = int(Battery_Input.Read_mA())
-        proto_data.Battery_Input_mV = int(Battery_Input.Read_mV())
+        if Battery_Input_OK:
+            proto_data.Battery_Input_mA = int(Battery_Input.Read_mA())
+            proto_data.Battery_Input_mV = int(Battery_Input.Read_mV())
         # SBC_Power_Supply を読み取って代入
-        proto_data.SBC_Power_Supply_mA = int(SBC_Power_Supply.Read_mA())
-        proto_data.SBC_Power_Supply_mV = int(SBC_Power_Supply.Read_mV())
+        if SBC_Power_Supply_OK:
+            proto_data.SBC_Power_Supply_mA = int(SBC_Power_Supply.Read_mA())
+            proto_data.SBC_Power_Supply_mV = int(SBC_Power_Supply.Read_mV())
         # Actuator_Power_Supply を読み取って代入        
-        proto_data.Actuator_Power_Supply_mA = int(Actuator_Power_Supply.Read_mA())
-        proto_data.Actuator_Power_Supply_mV = int(Actuator_Power_Supply.Read_mV())
+        if Actuator_Power_Supply_OK:
+            proto_data.Actuator_Power_Supply_mA = int(Actuator_Power_Supply.Read_mA())
+            proto_data.Actuator_Power_Supply_mV = int(Actuator_Power_Supply.Read_mV())
 
         #データのシリアライズ
         serialized_data = proto_data.SerializeToString()
