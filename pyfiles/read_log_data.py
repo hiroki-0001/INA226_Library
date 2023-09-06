@@ -72,7 +72,7 @@ def main():
         prev_time = log_data.timestamp.ToMilliseconds()
         writer.writerow([
             log_data.timestamp.ToDatetime().strftime('%Y/%m/%d'),
-            log_data.timestamp.ToDatetime().strftime('%H:%M:%S'),
+            log_data.timestamp.ToDatetime().strftime('%H:%M:%S.%f'),
             log_data.timestamp.ToMilliseconds() - start_time,
             log_data.Switching_Power_Input_mA,
             log_data.Switching_Power_Input_mV,
