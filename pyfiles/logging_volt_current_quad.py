@@ -128,24 +128,28 @@ def main():
         I2CBUS = bus_id
         try:
             Switching_Power_Input = INA226_lib.INA226(I2CBUS, INA226_ADDR_A0_GND_A1_GND, 2)
+            Switching_Power_Input_OK = True
         except Exception as e:
             Switching_Power_Input_OK = False
             print(e)
         
         try:
             Battery_Input = INA226_lib.INA226(I2CBUS, INA226_ADDR_A0_VDD_A1_GND, 2)
+            Battery_Input_OK = True
         except Exception as e:
             Battery_Input_OK = False
             print(e)
         
         try:
             SBC_Power_Supply = INA226_lib.INA226(I2CBUS, INA226_ADDR_A0_SDA_A1_GND, 2)
+            SBC_Power_Supply_OK = True
         except Exception as e:
             SBC_Power_Supply_OK = False
             print(e)
         
         try:
             Actuator_Power_Supply = INA226_lib.INA226(I2CBUS, INA226_ADDR_A0_SCL_A1_GND, 2)
+            Actuator_Power_Supply_OK = True
         except Exception as e:
             Actuator_Power_Supply_OK = False
             print(e)
@@ -153,24 +157,28 @@ def main():
         # Device initialization
         try:
             Switching_Power_Input.Initialization()
+            Switching_Power_Input_OK = True
         except Exception as e:
             Switching_Power_Input_OK = False
             print(e)
 
         try:
             Battery_Input.Initialization()
+            Battery_Input_OK = True
         except Exception as e:
             Battery_Input_OK = False
             print(e)
 
         try:
             SBC_Power_Supply.Initialization()
+            SBC_Power_Supply_OK = True
         except Exception as e:
             SBC_Power_Supply_OK = False
             print(e)
 
         try:
             Actuator_Power_Supply.Initialization()
+            Actuator_Power_Supply_OK = True
         except Exception as e:
             Actuator_Power_Supply_OK = False
             print(e)
