@@ -103,64 +103,87 @@ def main():
 
     global log_file
     global lock_file
+    
+    Switching_Power_Input = None
+    Battery_Input =         None
+    SBC_Power_Supply =      None
+    Actuator_Power_Supply = None
+
 
     Switching_Power_Input_OK  = True
     Battery_Input_OK = True
     SBC_Power_Supply_OK = True
     Actuator_Power_Supply_OK = True
+
+    bus_open_error = 0
+
     # ループカウンタ
     Loop_counter = 0
 
     #INA226(i2c_Bus, i2c_slave_address, shunt_resistor_val)
-    
-    try:
-        Switching_Power_Input = INA226_lib.INA226(I2CBUS, INA226_ADDR_A0_GND_A1_GND, 2)
-    except Exception as e:
-        Switching_Power_Input_OK = False
-        print(e)
-    
-    try:
-        Battery_Input = INA226_lib.INA226(I2CBUS, INA226_ADDR_A0_VDD_A1_GND, 2)
-    except Exception as e:
-        Battery_Input_OK = False
-        print(e)
-    
-    try:
-        SBC_Power_Supply = INA226_lib.INA226(I2CBUS, INA226_ADDR_A0_SDA_A1_GND, 2)
-    except Exception as e:
-        SBC_Power_Supply_OK = False
-        print(e)
-    
-    try:
-        Actuator_Power_Supply = INA226_lib.INA226(I2CBUS, INA226_ADDR_A0_SCL_A1_GND, 2)
-    except Exception as e:
-        Actuator_Power_Supply_OK = False
-        print(e)
 
-    # Device initialization
-    try:
-        Switching_Power_Input.Initialization()
-    except Exception as e:
-        Switching_Power_Input_OK = False
-        print(e)
+    # smbusのバス番号の候補
+    bus_list = [1,8]
+    for bus_id in bus_list:
+        I2CBUS = bus_id
+        try:
+            Switching_Power_Input = INA226_lib.INA226(I2CBUS, INA226_ADDR_A0_GND_A1_GND, 2)
+        except Exception as e:
+            Switching_Power_Input_OK = False
+            print(e)
+        
+        try:
+            Battery_Input = INA226_lib.INA226(I2CBUS, INA226_ADDR_A0_VDD_A1_GND, 2)
+        except Exception as e:
+            Battery_Input_OK = False
+            print(e)
+        
+        try:
+            SBC_Power_Supply = INA226_lib.INA226(I2CBUS, INA226_ADDR_A0_SDA_A1_GND, 2)
+        except Exception as e:
+            SBC_Power_Supply_OK = False
+            print(e)
+        
+        try:
+            Actuator_Power_Supply = INA226_lib.INA226(I2CBUS, INA226_ADDR_A0_SCL_A1_GND, 2)
+        except Exception as e:
+            Actuator_Power_Supply_OK = False
+            print(e)
 
-    try:
-        Battery_Input.Initialization()
-    except Exception as e:
-        Battery_Input_OK = False
-        print(e)
+        # Device initialization
+        try:
+            Switching_Power_Input.Initialization()
+        except Exception as e:
+            Switching_Power_Input_OK = False
+            print(e)
 
-    try:
-        SBC_Power_Supply.Initialization()
-    except Exception as e:
-        SBC_Power_Supply_OK = False
-        print(e)
+        try:
+            Battery_Input.Initialization()
+        except Exception as e:
+            Battery_Input_OK = False
+            print(e)
 
-    try:
-        Actuator_Power_Supply.Initialization()
-    except Exception as e:
-        Actuator_Power_Supply_OK = False
-        print(e)
+        try:
+            SBC_Power_Supply.Initialization()
+        except Exception as e:
+            SBC_Power_Supply_OK = False
+            print(e)
+
+        try:
+            Actuator_Power_Supply.Initialization()
+        except Exception as e:
+            Actuator_Power_Supply_OK = False
+            print(e)
+        
+        if (not Switching_Power_Input_OK) and (not Battery_Input_OK) and (not SBC_Power_Supply_OK) and (not Actuator_Power_Supply_OK):
+            bus_open_error += 1
+        else:
+            print("i2cbus id is ",I2CBUS)
+            break
+
+    if bus_open_error == 2:
+        print("Cannot open bus 1 and 8. Maybe i2c or INA226 has some problem")
+        exit()
 
 #ログファイルが存在するかの確認
     if os.path.isfile(log_file_path):
