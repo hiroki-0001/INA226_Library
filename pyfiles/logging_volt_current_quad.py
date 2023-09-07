@@ -108,7 +108,6 @@ def main():
     Battery_Input_OK = True
     SBC_Power_Supply_OK = True
     Actuator_Power_Supply_OK = True
-
     # ループカウンタ
     Loop_counter = 0
 
@@ -116,44 +115,52 @@ def main():
     
     try:
         Switching_Power_Input = INA226_lib.INA226(I2CBUS, INA226_ADDR_A0_GND_A1_GND, 2)
-    except:
+    except Exception as e:
         Switching_Power_Input_OK = False
+        print(e)
     
     try:
         Battery_Input = INA226_lib.INA226(I2CBUS, INA226_ADDR_A0_VDD_A1_GND, 2)
-    except:
+    except Exception as e:
         Battery_Input_OK = False
+        print(e)
     
     try:
         SBC_Power_Supply = INA226_lib.INA226(I2CBUS, INA226_ADDR_A0_SDA_A1_GND, 2)
-    except:
+    except Exception as e:
         SBC_Power_Supply_OK = False
+        print(e)
     
     try:
         Actuator_Power_Supply = INA226_lib.INA226(I2CBUS, INA226_ADDR_A0_SCL_A1_GND, 2)
-    except:
+    except Exception as e:
         Actuator_Power_Supply_OK = False
+        print(e)
 
     # Device initialization
     try:
         Switching_Power_Input.Initialization()
-    except:
+    except Exception as e:
         Switching_Power_Input_OK = False
+        print(e)
 
     try:
         Battery_Input.Initialization()
-    except:
+    except Exception as e:
         Battery_Input_OK = False
+        print(e)
 
     try:
         SBC_Power_Supply.Initialization()
-    except:
+    except Exception as e:
         SBC_Power_Supply_OK = False
+        print(e)
 
     try:
         Actuator_Power_Supply.Initialization()
-    except:
+    except Exception as e:
         Actuator_Power_Supply_OK = False
+        print(e)
 
 #ログファイルが存在するかの確認
     if os.path.isfile(log_file_path):
