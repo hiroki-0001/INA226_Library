@@ -41,3 +41,12 @@ python3 pyfiles/read_log_data.py
 ```bash
 python3 pyfiles/read_latest_data.py
 ```
+
+### ロボットに保存されているログデータを手元のPCに持ってくる方法
+- 以下を実行すると、対象ロボットのログをcsvとして手元のPCに持ってくる
+- 対象のロボットのid（必須）と、出力ファイル名（任意）を指定する
+- wifi経由でsshが出来る状態である必要がある。また、sshpassをインストールしておく必要がある
+
+```bash
+./get_ina_data_from_robot.py [robot_id] [output_filename(optional)]
+```
