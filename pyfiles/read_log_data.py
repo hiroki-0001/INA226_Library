@@ -11,7 +11,8 @@ import csv
 # 関連するファイル
 
 #ログを保存するファイル,シリアライズされたバイナリが保存されている
-log_file_path = '/var/tmp/log_voltage_and_current.dat'
+# log_file_path = '/var/tmp/log_voltage_and_current.dat'
+log_file_path = '182_ina.dat'
 #ログを保存するファイル用のロックファイル
 lock_log_file_path = '/var/tmp/lock_voltage_and_current.lock'
 
@@ -58,6 +59,7 @@ def main():
     line_count = 1
     start_time = 0
     prev_time = 0
+    JST_time_zone = datetime.timezone(datetime.timedelta(hours=+9))
     for line in log_data_lines:
         log_data = log_data_pb2.PowerLog()
         try:
@@ -71,8 +73,8 @@ def main():
             start_time = log_data.timestamp.ToMilliseconds()
         prev_time = log_data.timestamp.ToMilliseconds()
         writer.writerow([
-            log_data.timestamp.ToDatetime().strftime('%Y/%m/%d'),
-            log_data.timestamp.ToDatetime().strftime('%H:%M:%S.%f'),
+            log_data.timestamp.ToDatetime().astimezone(JST_time_zone).strftime('%Y/%m/%d'),
+            log_data.timestamp.ToDatetime().astimezone(JST_time_zone).strftime('%H:%M:%S.%f'),
             log_data.timestamp.ToMilliseconds() - start_time,
             log_data.Switching_Power_Input_mA,
             log_data.Switching_Power_Input_mV,
