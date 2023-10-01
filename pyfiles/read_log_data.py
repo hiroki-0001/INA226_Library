@@ -11,8 +11,7 @@ import csv
 # 関連するファイル
 
 #ログを保存するファイル,シリアライズされたバイナリが保存されている
-# log_file_path = '/var/tmp/log_voltage_and_current.dat'
-log_file_path = '182_ina.dat'
+log_file_path = '/var/tmp/log_voltage_and_current.dat'
 #ログを保存するファイル用のロックファイル
 lock_log_file_path = '/var/tmp/lock_voltage_and_current.lock'
 
@@ -73,8 +72,8 @@ def main():
             start_time = log_data.timestamp.ToMilliseconds()
         prev_time = log_data.timestamp.ToMilliseconds()
         writer.writerow([
-            log_data.timestamp.ToDatetime().astimezone(JST_time_zone).strftime('%Y/%m/%d'),
-            log_data.timestamp.ToDatetime().astimezone(JST_time_zone).strftime('%H:%M:%S.%f'),
+            log_data.timestamp.ToDatetime(JST_time_zone).strftime('%Y/%m/%d'),
+            log_data.timestamp.ToDatetime(JST_time_zone).strftime('%H:%M:%S.%f'),
             log_data.timestamp.ToMilliseconds() - start_time,
             log_data.Switching_Power_Input_mA,
             log_data.Switching_Power_Input_mV,

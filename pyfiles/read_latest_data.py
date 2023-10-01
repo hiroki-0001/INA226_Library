@@ -35,7 +35,7 @@ def main():
     log_data = log_data_pb2.PowerLog()
     log_data.ParseFromString(bytes.fromhex(last_line))
     JST_time_zone = datetime.timezone(datetime.timedelta(hours=+9))
-    print("date time :: ",log_data.timestamp.ToDatetime().astimezone(JST_time_zone).strftime('%Y/%m/%d %H:%M:%S.%f'))
+    print("date time :: ",log_data.timestamp.ToDatetime(JST_time_zone).strftime('%Y/%m/%d %H:%M:%S.%f'))
     print(log_data)
     
 if __name__ == '__main__':
