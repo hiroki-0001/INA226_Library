@@ -5,7 +5,7 @@ import time
 class INA226_offset_bias:
     
     def __init__(self):
-        with open('config.yaml', 'r') as yml:
+        with open('/etc/INA226_offset.yaml', 'r') as yml:
             self.config = yaml.safe_load(yml)
             print (self.config)
     

@@ -33,10 +33,10 @@ def calc_median(list_data):
 
 def main():
     #INA226(i2c_Bus, i2c_slave_address, shunt_resistor_val)
-    sample_device = INA226_lib.INA226(I2CBUS, INA226_ADDR_A0_SDA_A1_GND, 2)
+    sample_device = INA226_lib.INA226(I2CBUS, INA226_ADDR_A0_GND_A1_GND, 2)
     sample_device.Initialization()
     
-    with open("measure_data3.csv", "w", newline="") as f:
+    with open("measure_data.csv", "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(data_header)
     
@@ -68,7 +68,7 @@ def main():
         except ZeroDivisionError:
             print("ゼロ除算が発生しました")
                     
-        with open("measure_data3.csv", "a", newline="") as f:
+        with open("measure_data.csv", "a", newline="") as f:
             writer = csv.writer(f)
             writer.writerow(list_all_data)
         

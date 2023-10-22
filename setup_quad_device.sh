@@ -19,6 +19,8 @@ please
 
 "sudo systemctl start INA226VoltAndCurrent_quad.service" 
 or 
+"sudo systemctl restart INA226VoltAndCurrent_quad.service" 
+or
 reboot
 
 =========================================

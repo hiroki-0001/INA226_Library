@@ -19,6 +19,8 @@ please
 
 "sudo systemctl start INA226VoltAndCurrent_single.service" 
 or 
+"sudo systemctl restart INA226VoltAndCurrent_single.service" 
+or 
 reboot
 
 =========================================
