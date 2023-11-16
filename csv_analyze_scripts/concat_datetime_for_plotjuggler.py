@@ -1,9 +1,6 @@
 import os
 import sys
 
-# 時間が飛んでいる行を探し出し、その次に一行空白を挿入する事で、データを時間ごとに分割する。
-# コマンドライン引数が無ければina.csvを読み込んで、output.csvに出力する。ある場合は渡したものを読み込む。
-
 
 output_file_path = "data_concat.csv"
 default_input_file_path = "ina.csv"
