@@ -31,9 +31,9 @@ def divideDataBytime(target_filename) :
             index += 1
         time_seconds = line.split(',')[1].split('.')
         # print(time_seconds)
-        output_line = line.split(',')[0] + ',' + time_seconds[0]  +  '.' + time_seconds[1][:3] + ',' + ','.join(row_data)
+        output_line = line.split(',')[0] + ',' + time_seconds[0]  +  '.' + time_seconds[1][:3] + ',' + line.split(',')[2] + ',' + ','.join(row_data)
         output_lines.append(output_line)
-
+    output_lines[0] = output_lines[0] + '\n'
     out_fd = open(output_file_path,'w')
     out_fd.writelines(output_lines)
     out_fd.close()
