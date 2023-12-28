@@ -18,7 +18,8 @@ def divideDataBytime(target_filename) :
     item_names = output_lines[0].split(',')[3:]
     list_of_max = [0 for _ in range(len(item_names))]
     list_of_min = [0 for _ in range(len(item_names))]
-
+    number_of_files = 1
+    is_first_line = True
     target_lines = lines[1:]
     for line in target_lines:
         row_data = line.split(',')[3:]
@@ -33,10 +34,22 @@ def divideDataBytime(target_filename) :
         # print(time_seconds)
         output_line = line.split(',')[0] + ',' + time_seconds[0]  +  '.' + time_seconds[1][:3] + ',' + line.split(',')[2] + ',' + ','.join(row_data)
         output_lines.append(output_line)
-    output_lines[0] = output_lines[0] + '\n'
-    out_fd = open(output_file_path,'w')
-    out_fd.writelines(output_lines)
-    out_fd.close()
+        if int(line.split(',')[2]) == 0:
+            if is_first_line:
+                is_first_line = False
+                continue
+            print("Data Bordarline is :: ",row_data)
+            output_lines[0] = output_lines[0] + '\n'
+            out_fd = open(output_file_path.split('.')[0] + '_' + str(number_of_files) + '.' + output_file_path.split('.')[1],'w')
+            out_fd.writelines(output_lines[:-1])
+            out_fd.close()
+            number_of_files += 1
+            output_lines = output_lines[:-1]
+    if len(output_lines) > 1:
+        output_lines[0] = output_lines[0] + '\n'
+        out_fd = open(output_file_path.split('.')[0] + '_' + str(number_of_files) + '.' + output_file_path.split('.')[1],'w')
+        out_fd.writelines(output_lines)
+        out_fd.close()
     for i in range(len(item_names)):
         print('{:25s} , Max = {:8d} , Min = {:8d}'.format(item_names[i],list_of_max[i],list_of_min[i]))
 
