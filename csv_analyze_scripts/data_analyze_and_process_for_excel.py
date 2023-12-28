@@ -44,7 +44,8 @@ def divideDataBytime(target_filename) :
             out_fd.writelines(output_lines[:-1])
             out_fd.close()
             number_of_files += 1
-            output_lines = output_lines[:-1]
+            output_lines = list(output_lines[-1])
+            # print(output_lines)
     if len(output_lines) > 1:
         output_lines[0] = output_lines[0] + '\n'
         out_fd = open(output_file_path.split('.')[0] + '_' + str(number_of_files) + '.' + output_file_path.split('.')[1],'w')
