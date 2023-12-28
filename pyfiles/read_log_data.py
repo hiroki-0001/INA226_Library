@@ -40,7 +40,10 @@ def main():
 
     #排他ロックの取得
     print('read log data...\n This program may need some time. Please wait a moment.')
-    lock_file = open(lock_log_file_path, 'r+')
+    try:
+        lock_file = open(lock_log_file_path, 'r+')
+    except FileNotFoundError:
+        lock_file = open(lock_log_file_path, 'w+')
     fcntl.lockf(lock_file, fcntl.LOCK_EX)
 
     # ログファイルの読み込み
