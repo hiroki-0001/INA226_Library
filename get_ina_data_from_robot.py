@@ -2,10 +2,11 @@
 
 import sys
 import subprocess
+import datetime
 
 argvs = sys.argv
 if len(argvs) < 3:
-    print("Usage: python get_ina_data_from_robot.py [target_robot(number)] [connect device(wifi or lan)] optional:[output_file_name]")
+    print("Usage: python get_ina_data_from_robot.py [target_robot(number)] [connect device(wifi or lan)]")
     sys.exit()
 
 target_robot = argvs[1]
@@ -14,10 +15,8 @@ if connect_device != "wifi" and connect_device != "lan":
     print("connect_device Must be [lan or wifi]")
     sys.exit()
 
-if len(argvs) == 4:
-    output_file_name = "./" + argvs[3]
-else:
-    output_file_name = "."
+date = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M")
+output_file_name = "./" + target_robot + "_" + date +"_vol_and_cur_data.csv"
 
 print("target_robot: " + target_robot)
 print("output_file_name: " + output_file_name)
@@ -28,8 +27,8 @@ except:
     sys.exit()
 
 if connect_device == "wifi":
-    subprocess.run(["sshpass -p cit" + target_robot + " ssh cit@192.168.4." + target_robot + " \"cd ~/INA226_Library/pyfiles; python3 read_log_data.py\""], shell=True)
-    subprocess.run(["sshpass -p cit" + target_robot + " scp cit@192.168.4." + target_robot + ":~/INA226_Library/pyfiles/vol_and_cur_data.csv " + output_file_name],shell=True)
+    subprocess.run(["sshpass -p cit" + target_robot + " ssh cit@192.168.3." + target_robot + " \"cd ~/INA226_Library/pyfiles; python3 read_log_data.py\""], shell=True)
+    subprocess.run(["sshpass -p cit" + target_robot + " scp cit@192.168.3." + target_robot + ":~/INA226_Library/pyfiles/vol_and_cur_data.csv " + output_file_name],shell=True)
 else:
     subprocess.run(["sshpass -p cit" + target_robot + " ssh cit@192.168.100." + target_robot + " \"cd ~/INA226_Library/pyfiles; python3 read_log_data.py\""], shell=True)
     subprocess.run(["sshpass -p cit" + target_robot + " scp cit@192.168.100." + target_robot + ":~/INA226_Library/pyfiles/vol_and_cur_data.csv " + output_file_name],shell=True)
