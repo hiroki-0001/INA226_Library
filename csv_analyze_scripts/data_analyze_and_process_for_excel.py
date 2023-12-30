@@ -15,12 +15,14 @@ def divideDataBytime(target_filename) :
     line_num = 0
     output_lines = []
     output_lines.append(lines[0].replace('\n',''))
-    item_names = output_lines[0].split(',')[3:]
+    column_name_line = output_lines[0]
+    item_names = column_name_line.split(',')[3:]
     list_of_max = [0 for _ in range(len(item_names))]
     list_of_min = [0 for _ in range(len(item_names))]
     number_of_files = 1
     is_first_line = True
     target_lines = lines[1:]
+    output_filenames = []
     for line in target_lines:
         row_data = line.split(',')[3:]
         index = 0
@@ -39,25 +41,29 @@ def divideDataBytime(target_filename) :
                 is_first_line = False
                 continue
             print("Data Bordarline is :: ",row_data)
+            output_lines.insert(0,column_name_line)
             output_lines[0] = output_lines[0] + '\n'
             out_fd = open(output_file_path.split('.')[0] + '_' + str(number_of_files) + '.' + output_file_path.split('.')[1],'w')
             out_fd.writelines(output_lines[:-1])
+            output_filenames.append(out_fd.name)
             out_fd.close()
             number_of_files += 1
             output_lines = list(output_lines[-1])
             # print(output_lines)
     if len(output_lines) > 1:
+        output_lines.insert(0,column_name_line)
         output_lines[0] = output_lines[0] + '\n'
         out_fd = open(output_file_path.split('.')[0] + '_' + str(number_of_files) + '.' + output_file_path.split('.')[1],'w')
         out_fd.writelines(output_lines)
+        output_filenames.append(out_fd.name)
         out_fd.close()
     for i in range(len(item_names)):
         print('{:25s} , Max = {:8d} , Min = {:8d}'.format(item_names[i],list_of_max[i],list_of_min[i]))
-
+    return output_filenames
 
 if __name__ == '__main__':
     file_path = default_input_file_path
     if len(sys.argv) > 1:
         file_path = sys.argv[1]
-    divideDataBytime(file_path)
-    print("\n\n*** Write data to [ ",output_file_path,"] ***")
+    output_file_names = divideDataBytime(file_path)
+    print("\n\n*** Write data to [ ",output_file_names,"] ***")
