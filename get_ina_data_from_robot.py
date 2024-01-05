@@ -27,8 +27,13 @@ except:
     sys.exit()
 
 if connect_device == "wifi":
-    subprocess.run(["sshpass -p cit" + target_robot + " ssh cit@192.168.3." + target_robot + " \"cd ~/INA226_Library/pyfiles; python3 read_log_data.py\""], shell=True)
-    subprocess.run(["sshpass -p cit" + target_robot + " scp cit@192.168.3." + target_robot + ":~/INA226_Library/pyfiles/vol_and_cur_data.csv " + output_file_name],shell=True)
+    try:
+        subprocess.check_output(["sshpass -p cit" + target_robot + " ssh cit@192.168.4." + target_robot + " \"cd ~/INA226_Library/pyfiles; python3 read_log_data.py\""], shell=True)
+        subprocess.check_output(["sshpass -p cit" + target_robot + " scp cit@192.168.4." + target_robot + ":~/INA226_Library/pyfiles/vol_and_cur_data.csv " + output_file_name],shell=True)
+    except subprocess.CalledProcessError as e:
+        print("Error: target ip 192.168.4.{} is not found. Trying 192.168.3.{} ...".format(target_robot,target_robot))
+        subprocess.check_output(["sshpass -p cit" + target_robot + " ssh cit@192.168.3." + target_robot + " \"cd ~/INA226_Library/pyfiles; python3 read_log_data.py\""], shell=True)
+        subprocess.check_output(["sshpass -p cit" + target_robot + " scp cit@192.168.3." + target_robot + ":~/INA226_Library/pyfiles/vol_and_cur_data.csv " + output_file_name],shell=True)
 else:
     subprocess.run(["sshpass -p cit" + target_robot + " ssh cit@192.168.100." + target_robot + " \"cd ~/INA226_Library/pyfiles; python3 read_log_data.py\""], shell=True)
     subprocess.run(["sshpass -p cit" + target_robot + " scp cit@192.168.100." + target_robot + ":~/INA226_Library/pyfiles/vol_and_cur_data.csv " + output_file_name],shell=True)
