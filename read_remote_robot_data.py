@@ -23,6 +23,10 @@ except:
     sys.exit()
 
 if connect_device == "wifi":
-    subprocess.run(["sshpass -p cit" + target_robot + " ssh cit@192.168.4." + target_robot + " \"cd ~/INA226_Library/pyfiles; python3 read_latest_data.py\""], shell=True)
+    try :
+        subprocess.check_output(["sshpass -p cit" + target_robot + " ssh cit@192.168.4." + target_robot + " \"cd ~/INA226_Library/pyfiles; python3 read_latest_data.py\""], shell=True)
+    except:
+        print("Error: replace address 4 to 3 and retry." )
+        subprocess.run(["sshpass -p cit" + target_robot + " ssh cit@192.168.3." + target_robot + " \"cd ~/INA226_Library/pyfiles; python3 read_latest_data.py\""], shell=True)
 else:
     subprocess.run(["sshpass -p cit" + target_robot + " ssh cit@192.168.100." + target_robot + " \"cd ~/INA226_Library/pyfiles; python3 read_latest_data.py\""], shell=True)
