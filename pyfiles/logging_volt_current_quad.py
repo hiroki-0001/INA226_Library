@@ -123,7 +123,7 @@ def main():
     #INA226(i2c_Bus, i2c_slave_address, shunt_resistor_val)
 
     # smbusのバス番号の候補
-    bus_list = [1,8]
+    bus_list = [1,7,8]
     for bus_id in bus_list:
         I2CBUS = bus_id
         try:
