@@ -1,0 +1,15 @@
+[Unit]
+Description=This service auto-starts a script to measure voltage and current using INA226 sensor twin device.
+
+[Service]
+Type=simple
+# your username
+User=cit
+# your group
+Group=cit
+#path
+ExecStart=/home/cit/INA226_Library/pyfiles/logging_volt_current_twin.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
