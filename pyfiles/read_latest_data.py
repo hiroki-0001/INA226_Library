@@ -32,7 +32,12 @@ def main():
     with open(log_file_path, 'r') as f:
         last_line = f.readlines()[-1]
     fcntl.lockf(lock_file, fcntl.LOCK_UN)
-    log_data = log_data_pb2.PowerLog()
+    log_data = None
+    env_var_value = os.getenv('INA_MODULE_TYPE')
+    if env_var_value == '20xTwin':
+        log_data = log_data_pb2.PowerLogTwinFor20x()
+    else:
+        log_data = log_data_pb2.PowerLog()
     log_data.ParseFromString(bytes.fromhex(last_line))
     JST_time_zone = datetime.timezone(datetime.timedelta(hours=+9))
     print("date time :: ",log_data.timestamp.ToDatetime(JST_time_zone).strftime('%Y/%m/%d %H:%M:%S.%f'))
