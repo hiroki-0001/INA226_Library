@@ -13,3 +13,13 @@ message PowerLog{
     sint32 Actuator_Power_Supply_mA = 8; //サーボ
     sint32 Actuator_Power_Supply_mV = 9;
 }
+
+
+
+message PowerLogTwinFor20x{
+    google.protobuf.Timestamp timestamp = 1;            //データを取得した時間のタイムスタンプ
+    sint32 Right_Switching_Power_Input_mA = 2; //スイッチング電源 右
+    sint32 Right_Switching_Power_Input_mV = 3;
+    sint32 Left_Switching_Power_Input_mA = 4; //スイッチング電源　左
+    sint32 Left_Switching_Power_Input_mV = 5;
+}

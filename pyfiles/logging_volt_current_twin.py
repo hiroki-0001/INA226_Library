@@ -163,17 +163,17 @@ def main():
     while(1):
         start_time = time.perf_counter()
         # protoを作成
-        proto_data = log_data_pb2.PowerLog()
+        proto_data = log_data_pb2.PowerLogTwinFor20x()
         # タイムスタンプをセット
         proto_data.timestamp.GetCurrentTime()
         # right_body_power_supply を読み取って代入
         if right_body_power_supply_OK:
-            proto_data.right_body_power_supply_mA = int(right_body_power_supply.Read_mA())
-            proto_data.right_body_power_supply_mV = int(right_body_power_supply.Read_mV())
+            proto_data.Right_Switching_Power_Input_mA = int(right_body_power_supply.Read_mA())
+            proto_data.Right_Switching_Power_Input_mV = int(right_body_power_supply.Read_mV())
         # Battery_Input_Power_Input を読み取って代入
         if left_body_power_supply_OK:
-            proto_data.left_body_power_supply_mA = int(left_body_power_supply.Read_mA())
-            proto_data.left_body_power_supply_mV = int(left_body_power_supply.Read_mV())
+            proto_data.Left_Switching_Power_Input_mA = int(left_body_power_supply.Read_mA())
+            proto_data.Left_Switching_Power_Input_mV = int(left_body_power_supply.Read_mV())
 
         #データのシリアライズ
         serialized_data = proto_data.SerializeToString()
