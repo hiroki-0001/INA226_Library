@@ -14,7 +14,7 @@ _sym_db = _symbol_database.Default()
 from google.protobuf import timestamp_pb2 as google_dot_protobuf_dot_timestamp__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0elog_data.proto\x12\npower_data\x1a\x1fgoogle/protobuf/timestamp.proto\"\xaf\x02\n\x08PowerLog\x12-\n\ttimestamp\x18\x01 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12 \n\x18Switching_Power_Input_mA\x18\x02 \x01(\x11\x12 \n\x18Switching_Power_Input_mV\x18\x03 \x01(\x11\x12\x18\n\x10\x42\x61ttery_Input_mA\x18\x04 \x01(\x11\x12\x18\n\x10\x42\x61ttery_Input_mV\x18\x05 \x01(\x11\x12\x1b\n\x13SBC_Power_Supply_mA\x18\x06 \x01(\x11\x12\x1b\n\x13SBC_Power_Supply_mV\x18\x07 \x01(\x11\x12 \n\x18\x41\x63tuator_Power_Supply_mA\x18\x08 \x01(\x11\x12 \n\x18\x41\x63tuator_Power_Supply_mV\x18\t \x01(\x11\"\xe1\x01\n\x12PowerLogTwinFor20x\x12-\n\ttimestamp\x18\x01 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12&\n\x1eRight_Switching_Power_Input_mA\x18\x02 \x01(\x11\x12&\n\x1eRight_Switching_Power_Input_mV\x18\x03 \x01(\x11\x12%\n\x1dLeft_Switching_Power_Input_mA\x18\x04 \x01(\x11\x12%\n\x1dLeft_Switching_Power_Input_mV\x18\x05 \x01(\x11\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0elog_data.proto\x12\npower_data\x1a\x1fgoogle/protobuf/timestamp.proto\"\xaf\x02\n\x08PowerLog\x12-\n\ttimestamp\x18\x01 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12 \n\x18Switching_Power_Input_mA\x18\x02 \x01(\x11\x12 \n\x18Switching_Power_Input_mV\x18\x03 \x01(\x11\x12\x18\n\x10\x42\x61ttery_Input_mA\x18\x04 \x01(\x11\x12\x18\n\x10\x42\x61ttery_Input_mV\x18\x05 \x01(\x11\x12\x1b\n\x13SBC_Power_Supply_mA\x18\x06 \x01(\x11\x12\x1b\n\x13SBC_Power_Supply_mV\x18\x07 \x01(\x11\x12 \n\x18\x41\x63tuator_Power_Supply_mA\x18\x08 \x01(\x11\x12 \n\x18\x41\x63tuator_Power_Supply_mV\x18\t \x01(\x11\"\xcf\x02\n\x12PowerLogTwinFor20x\x12-\n\ttimestamp\x18\x01 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12&\n\x1eRight_Switching_Power_Input_mA\x18\x02 \x01(\x11\x12&\n\x1eRight_Switching_Power_Input_mV\x18\x03 \x01(\x11\x12%\n\x1dLeft_Switching_Power_Input_mA\x18\x04 \x01(\x11\x12%\n\x1dLeft_Switching_Power_Input_mV\x18\x05 \x01(\x11\x12\x18\n\x10\x42\x61ttery_Input_mA\x18\x06 \x01(\x11\x12\x18\n\x10\x42\x61ttery_Input_mV\x18\x07 \x01(\x11\x12\x1b\n\x13SBC_Power_Supply_mA\x18\x08 \x01(\x11\x12\x1b\n\x13SBC_Power_Supply_mV\x18\t \x01(\x11\x62\x06proto3')
 
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, globals())
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'log_data_pb2', globals())
@@ -24,5 +24,5 @@ if _descriptor._USE_C_DESCRIPTORS == False:
   _POWERLOG._serialized_start=64
   _POWERLOG._serialized_end=367
   _POWERLOGTWINFOR20X._serialized_start=370
-  _POWERLOGTWINFOR20X._serialized_end=595
+  _POWERLOGTWINFOR20X._serialized_end=705
 # @@protoc_insertion_point(module_scope)
