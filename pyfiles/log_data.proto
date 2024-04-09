@@ -22,4 +22,8 @@ message PowerLogTwinFor20x{
     sint32 Right_Switching_Power_Input_mV = 3;
     sint32 Left_Switching_Power_Input_mA = 4; //スイッチング電源　左
     sint32 Left_Switching_Power_Input_mV = 5;
+    sint32 Battery_Input_mA = 6;         //バッテリー
+    sint32 Battery_Input_mV = 7;
+    sint32 SBC_Power_Supply_mA = 8;      //Jetsonの電源
+    sint32 SBC_Power_Supply_mV = 9;
 }
