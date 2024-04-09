@@ -39,10 +39,10 @@ csv_header_20x = [
     'Right_Switching_Power_Input_mV',
     'Left_Switching_Power_Input_mA',
     'Left_Switching_Power_Input_mV',
-    'Battery_Input',
-    'Battery_Input_OK',
-    'SBC_Power_Supply',
-    'SBC_Power_Supply_OK'
+    'Battery_Input_mA',
+    'Battery_Input_mV',
+    'SBC_Power_Supply_mA',
+    'SBC_Power_Supply_mV'
 ]
 
 def main():
@@ -113,7 +113,7 @@ def main():
                 log_data.Battery_Input_mA,
                 log_data.Battery_Input_mV,
                 log_data.SBC_Power_Supply_mA,
-                log_data.SBC_Power_Supply_mV,
+                log_data.SBC_Power_Supply_mV
             ])
         else:
             writer.writerow([
