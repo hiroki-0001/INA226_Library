@@ -105,19 +105,19 @@ def main():
     global lock_file
     
     # Switching_Power_Input = None
-    # Battery_Input =         None
-    # SBC_Power_Supply =      None
     # Actuator_Power_Supply = None
     
+    Battery_Input =         None
+    SBC_Power_Supply =      None
     right_body_power_supply = None
     left_body_power_supply  = None
 
 
     # Switching_Power_Input_OK  = True
-    # Battery_Input_OK = True
-    # SBC_Power_Supply_OK = True
     # Actuator_Power_Supply_OK = True
     
+    Battery_Input_OK = True
+    SBC_Power_Supply_OK = True
     right_body_power_supply = True
     left_body_power_supply  = True
 
@@ -128,10 +128,15 @@ def main():
     Loop_counter = 0
 
     #INA226(i2c_Bus, i2c_slave_address, shunt_resistor_val)
-
-    right_body_power_supply = INA226_lib.INA226(7, INA226_ADDR_A0_SCL_A1_GND, 2)
+    Battery_Input = INA226_lib.INA226(7, INA226_ADDR_A0_SDA_A1_GND, 2)
+    SBC_Power_Supply = INA226_lib.INA226(7, INA226_ADDR_A0_VDD_A1_GND, 2)
+    right_body_power_supply = INA226_lib.INA226(1, INA226_ADDR_A0_SCL_A1_GND, 2)
     left_body_power_supply = INA226_lib.INA226(1, INA226_ADDR_A0_SDA_A1_GND, 2)
     # Device initialization
+    Battery_Input.Initialization()
+    Battery_Input_OK = True
+    SBC_Power_Supply.Initialization()
+    SBC_Power_Supply_OK = True
     right_body_power_supply.Initialization()
     right_body_power_supply_OK = True
     left_body_power_supply.Initialization()
@@ -165,6 +170,15 @@ def main():
         proto_data = log_data_pb2.PowerLogTwinFor20x()
         # タイムスタンプをセット
         proto_data.timestamp.GetCurrentTime()
+        
+        # Battery_Input を読み取って代入
+        if Battery_Input_OK:
+            proto_data.Battery_Input_mA = int(Battery_Input.Read_mA())
+            proto_data.Battery_Input_mV = int(Battery_Input.Read_mV())
+        # SBC_Power_Supply を読み取って代入
+        if SBC_Power_Supply_OK:
+            proto_data.SBC_Power_Supply_mA = int(SBC_Power_Supply.Read_mA())
+            proto_data.SBC_Power_Supply_mV = int(SBC_Power_Supply.Read_mV())
         # right_body_power_supply を読み取って代入
         if right_body_power_supply_OK:
             proto_data.Right_Switching_Power_Input_mA = int(right_body_power_supply.Read_mA())
