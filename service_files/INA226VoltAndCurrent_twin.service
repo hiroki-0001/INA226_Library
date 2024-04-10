@@ -8,7 +8,7 @@ User=cit
 # your group
 Group=cit
 #path
-ExecStart=/home/cit/INA226_Library/pyfiles/logging_volt_current_twin.py
+ExecStart=/home/cit/INA226_Library/pyfiles/run_twin_cython.py
 Restart=always
 
 [Install]
