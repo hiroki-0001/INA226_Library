@@ -18,6 +18,18 @@
             color: #333;
         }
 
+        .batterynormal {
+            font-weight: bold;
+            color: green;
+            font-size: large;
+        }
+
+        .batterywarning {
+            font-weight: bold;
+            color: red;
+            font-size: large;
+        }
+
         .container {
             width: 80%;
             margin: 0 auto;
@@ -30,10 +42,14 @@
             margin: 5px;
             border-radius: 5px;
         }
-        li {
-            background: #ffb6c1;
+
+        b {
+            padding: 20px;
+            background-color: #f4f4f4;
+            color: #333;
         }
     </style>
+
     <div class="container">
         <h1>INA226 data display</h1>
         <p>
@@ -110,14 +126,14 @@
     client.on('message', (topic, message) => {
         const checkbox = document.getElementById('history_checkbox');
         const historyIsOn = checkbox.checked;
-        
+
         const elementsToRemove = Array.from(document.body.children).slice(1);
         if (elementsToRemove.length > 1 && !historyIsOn) {
             elementsToRemove.forEach(element => {
-            document.body.removeChild(element);
+                document.body.removeChild(element);
             });
         }
-        
+
         const messageText = message.toString();
         const messages = messageText.split('}');
         messages[0] = messages[0] + '}';
@@ -129,16 +145,26 @@
         const rightSwitchElem = document.createElement('ul');
         rightSwitchElem.textContent = messages[1].split('Left_Switching_Power_Input_mA')[0].trim();
         document.body.appendChild(rightSwitchElem);
+
         const leftSwitchElem = document.createElement('ul');
         leftSwitchElem.textContent = 'Left_Switching_Power_Input_mA' + messages[1].split('Left_Switching_Power_Input_mA')[1].split('Battery_Input_mA')[0].trim();
         document.body.appendChild(leftSwitchElem);
+
         const batteryElem = document.createElement('ul');
-        batteryElem.textContent = 'Battery_Input_mA' + messages[1].split('Left_Switching_Power_Input_mA')[1].split('Battery_Input_mA')[1].trim();
+        batteryElem.textContent = 'Battery_Input_mA' + messages[1].split('Left_Switching_Power_Input_mA')[1].split('Battery_Input_mA')[1].split('SBC_Power_Supply_mA')[0].trim();
+        const batteryInputElem = batteryElem.textContent.split(' ').pop();
+        const batteryInputValue = parseFloat(batteryInputElem);
+        if(batteryInputValue < 10500) {
+            batteryElem.classList.add('batterywarning');
+        }
+        else
+        {
+            batteryElem.classList.add('batterynormal');
+        }
         document.body.appendChild(batteryElem);
-        // messages.forEach((msg) => {
-        //     const receivedMessageElement = document.createElement('p');
-        //     receivedMessageElement.textContent = msg.trim();
-        //     document.body.appendChild(receivedMessageElement);
-        // });
+
+        const SBCElem = document.createElement('ul');
+        SBCElem.textContent = 'SBC_Power_Supply_mA' + messages[1].split('Left_Switching_Power_Input_mA')[1].split('Battery_Input_mA')[1].split('SBC_Power_Supply_mA')[1].trim();
+        document.body.appendChild(SBCElem);
     });
 </script>
