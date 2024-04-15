@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weboscoket MQTT</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mqtt/5.5.2/mqtt.min.js"></script>
+</head>
+
+<header>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+
+        p {
+            background: #f4f4f4;
+            padding: 10px;
+            margin: 5px;
+            border-radius: 5px;
+        }
+    </style>
+    <div class="container">
+        <h1>INA226 data display</h1>
+        <p>
+            <label>
+                <input type="checkbox" id="history_checkbox">
+                Reserve history
+            </label>
+        </p>
+        <p>
+            <label>
+                <input type="button" id="clear_history_button" value="Clear history">
+                <script>
+                    const button = document.getElementById("clear_history_button");
+                    button.addEventListener("click", clerHistoryButton);
+                    function clerHistoryButton() {
+                        const elementsToRemove = Array.from(document.body.children).slice(1);
+                        elementsToRemove.forEach(element => {
+                            document.body.removeChild(element);
+                        });
+                    }
+                </script>
+            </label>
+        </p>
+    </div>
+</header>
+
+<body>
+    <div class="inadata_list">
+    </div>
+</body>
+
+<script>
+    const clientId = 'mqttjs_' + Math.random().toString(16).substr(2, 8)
+    const host = 'ws://192.168.75.220:8083/mqtt'
+    const connect_text = 'Host data:: ' + host + ' | Client ID:: ' + clientId
+
+    const connectDataElement = document.createElement('p');
+    connectDataElement.textContent = connect_text;
+    document.querySelector('.container').appendChild(connectDataElement);
+
+    console.log('Connecting to ', connect_text)
+    const options = {
+        keepalive: 60,
+        clientId: clientId,
+        protocolId: 'MQTT',
+        protocolVersion: 4,
+        clean: true,
+        reconnectPeriod: 1000,
+        connectTimeout: 30 * 1000,
+        will: {
+            topic: 'WillMsg',
+            payload: 'Connection Closed abnormally..!',
+            qos: 0,
+            retain: false
+        },
+    }
+    console.log('Connecting mqtt client')
+    const client = mqtt.connect(host, options)
+    client.on('error', (err) => {
+        console.log('Connection error: ', err)
+        client.end()
+    })
+    client.on('reconnect', () => {
+        console.log('Reconnecting...')
+    })
+    client.subscribe('INA226_data', { qos: 0 }, (error) => {
+        if (error) {
+            console.log('Subscription error: ', error)
+        } else {
+            console.log('Subscribed to INA226_data topic')
+        }
+    })
+
+    client.on('message', (topic, message) => {
+        const checkbox = document.getElementById('history_checkbox');
+        const historyIsOn = checkbox.checked;
+        
+        const elementToRemove = document.body.children[1];
+        if (elementToRemove && !historyIsOn) {
+            document.body.removeChild(elementToRemove);
+        }
+        const receivedMessageElement = document.createElement('p');
+        receivedMessageElement.textContent = message.toString();
+        document.body.appendChild(receivedMessageElement);
+    })
+</script>
