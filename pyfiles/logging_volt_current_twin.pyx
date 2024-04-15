@@ -33,7 +33,7 @@ INA226_ADDR_A0_SCL_A1_SCL = 0x55
 
 
 # Settings
-LOGGING_HZ = 100 # ログを取得する周期(Hz)
+LOGGING_HZ = 200 # ログを取得する周期(Hz)
 MINIMUM_LOG_LINES = LOGGING_HZ * 60 * 15  #最低限ログを保存しておく行数(15分相当分)
 MAX_LOG_LINES = MINIMUM_LOG_LINES * 3 #この行数を超えたら、ログを上の行数まで減らす （45分）
 SLEEP_TIME = 1.0 / LOGGING_HZ #ログを取るのに待つ間隔
@@ -128,8 +128,8 @@ def main():
     Loop_counter = 0
 
     #INA226(i2c_Bus, i2c_slave_address, shunt_resistor_val)
-    Battery_Input = INA226_lib.INA226(7, INA226_ADDR_A0_SDA_A1_GND, 2)
-    SBC_Power_Supply = INA226_lib.INA226(7, INA226_ADDR_A0_VDD_A1_GND, 2)
+    SBC_Power_Supply = INA226_lib.INA226(7, INA226_ADDR_A0_SDA_A1_GND, 2)
+    Battery_Input = INA226_lib.INA226(7, INA226_ADDR_A0_VDD_A1_GND, 2)
     right_body_power_supply = INA226_lib.INA226(1, INA226_ADDR_A0_SCL_A1_GND, 2)
     left_body_power_supply = INA226_lib.INA226(1, INA226_ADDR_A0_SDA_A1_GND, 2)
     # Device initialization

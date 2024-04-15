@@ -128,8 +128,8 @@ def main():
     Loop_counter = 0
 
     #INA226(i2c_Bus, i2c_slave_address, shunt_resistor_val)
-    Battery_Input = INA226_lib.INA226(7, INA226_ADDR_A0_SDA_A1_GND, 2)
-    SBC_Power_Supply = INA226_lib.INA226(7, INA226_ADDR_A0_VDD_A1_GND, 2)
+    SBC_Power_Supply = INA226_lib.INA226(7, INA226_ADDR_A0_SDA_A1_GND, 2)
+    Battery_Input = INA226_lib.INA226(7, INA226_ADDR_A0_VDD_A1_GND, 2)
     right_body_power_supply = INA226_lib.INA226(1, INA226_ADDR_A0_SCL_A1_GND, 2)
     left_body_power_supply = INA226_lib.INA226(1, INA226_ADDR_A0_SDA_A1_GND, 2)
     # Device initialization
