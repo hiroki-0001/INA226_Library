@@ -13,7 +13,7 @@
         body {
             font-family: Arial, sans-serif;
             margin: 0;
-            padding: 0;
+            padding: 20px;
             background-color: #f4f4f4;
             color: #333;
         }
@@ -25,10 +25,13 @@
         }
 
         p {
-            background: #f4f4f4;
-            padding: 10px;
+            background: #e6e6fa;
+            padding: 30px;
             margin: 5px;
             border-radius: 5px;
+        }
+        li {
+            background: #ffb6c1;
         }
     </style>
     <div class="container">
@@ -108,12 +111,34 @@
         const checkbox = document.getElementById('history_checkbox');
         const historyIsOn = checkbox.checked;
         
-        const elementToRemove = document.body.children[1];
-        if (elementToRemove && !historyIsOn) {
-            document.body.removeChild(elementToRemove);
+        const elementsToRemove = Array.from(document.body.children).slice(1);
+        if (elementsToRemove.length > 1 && !historyIsOn) {
+            elementsToRemove.forEach(element => {
+            document.body.removeChild(element);
+            });
         }
-        const receivedMessageElement = document.createElement('p');
-        receivedMessageElement.textContent = message.toString();
-        document.body.appendChild(receivedMessageElement);
-    })
+        
+        const messageText = message.toString();
+        const messages = messageText.split('}');
+        messages[0] = messages[0] + '}';
+        const messageTimeElement = document.createElement('p');
+        messageTimeElement.textContent = messages[0].trim();
+        document.body.appendChild(messageTimeElement);
+
+        // 計測データ群
+        const rightSwitchElem = document.createElement('ul');
+        rightSwitchElem.textContent = messages[1].split('Left_Switching_Power_Input_mA')[0].trim();
+        document.body.appendChild(rightSwitchElem);
+        const leftSwitchElem = document.createElement('ul');
+        leftSwitchElem.textContent = 'Left_Switching_Power_Input_mA' + messages[1].split('Left_Switching_Power_Input_mA')[1].split('Battery_Input_mA')[0].trim();
+        document.body.appendChild(leftSwitchElem);
+        const batteryElem = document.createElement('ul');
+        batteryElem.textContent = 'Battery_Input_mA' + messages[1].split('Left_Switching_Power_Input_mA')[1].split('Battery_Input_mA')[1].trim();
+        document.body.appendChild(batteryElem);
+        // messages.forEach((msg) => {
+        //     const receivedMessageElement = document.createElement('p');
+        //     receivedMessageElement.textContent = msg.trim();
+        //     document.body.appendChild(receivedMessageElement);
+        // });
+    });
 </script>
