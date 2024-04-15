@@ -8,4 +8,4 @@ ExecStart=/home/cit/INA226_Library/pyfiles/run_twin_cython.py
 Restart=always
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=default.target
