@@ -3,10 +3,6 @@ Description=This service auto-starts a script to measure voltage and current usi
 
 [Service]
 Type=simple
-# your username
-User=cit
-# your group
-Group=cit
 #path
 ExecStart=/home/cit/INA226_Library/pyfiles/run_twin_cython.py
 Restart=always
